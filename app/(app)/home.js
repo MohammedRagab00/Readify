@@ -1,30 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
+import { getDocs, collection } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCB7vyN2k4OtKgLdaQpdRKt9z16nvT-_YU",
-  authDomain: "fir-764ee.firebaseapp.com",
-  projectId: "fir-764ee",
-  storageBucket: "fir-764ee.appspot.com",
-  messagingSenderId: "160083899923",
-  appId: "1:160083899923:web:3395b1cc936f1b851431e6",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { StyleSheet, TextInput, FlatList, Alert, View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Loading from '../../components/Loading';
+import { db } from '../../firebaseConfig';
+import { Image } from "expo-image";
 
 export default function TabOneScreen() {
   const [books, setBooks] = useState([]);
@@ -36,6 +19,7 @@ export default function TabOneScreen() {
     checkInternetConnection();
     fetchBooks();
   }, []);
+
   const checkInternetConnection = async () => {
     const isConnected = await NetInfo.fetch().then(
       (state) => state.isConnected
@@ -48,6 +32,7 @@ export default function TabOneScreen() {
       );
     }
   };
+
   const fetchBooks = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Books"));
@@ -82,14 +67,14 @@ export default function TabOneScreen() {
 
   const sortedBooks = sortBy
     ? filteredBooks.sort((a, b) => {
-        if (sortBy === "price") {
-          return a[sortBy] - b[sortBy]; // Compare prices directly as numbers
-        } else if (a[sortBy] && b[sortBy]) {
-          return a[sortBy].toString().localeCompare(b[sortBy].toString());
-        } else {
-          return 0;
-        }
-      })
+      if (sortBy === "price") {
+        return a[sortBy] - b[sortBy]; // Compare prices directly as numbers
+      } else if (a[sortBy] && b[sortBy]) {
+        return a[sortBy].toString().localeCompare(b[sortBy].toString());
+      } else {
+        return 0;
+      }
+    })
     : filteredBooks;
 
   return (
@@ -101,15 +86,15 @@ export default function TabOneScreen() {
         value={searchQuery}
       />
       <View style={styles.sortContainer}>
-        <Text style={{ fontWeight: "bold", marginTop: 15 }}>Sort by:</Text>
+        <Text style={{ fontWeight: "bold", marginTop: hp('1.5%') }}>Sort by:</Text>
         <Pressable
           onPress={() => setSortBy("name")}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: 10,
-              margin: 5,
-              borderRadius: 10,
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -120,9 +105,9 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: 10,
-              margin: 5,
-              borderRadius: 10,
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -133,9 +118,9 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: 10,
-              margin: 5,
-              borderRadius: 10,
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -146,9 +131,9 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: 10,
-              margin: 5,
-              borderRadius: 10,
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -156,21 +141,29 @@ export default function TabOneScreen() {
         </Pressable>
       </View>
       {loading ? (
-        <ActivityIndicator size="large" color="green" />
+       <View style={{justifyContent:"center",alignItems:"center"}}>
+         < Loading size ={hp(8)}/>
+       </View>
       ) : (
         <FlatList
           data={sortedBooks}
           renderItem={({ item }) => (
             <Pressable onPress={() => handleBookPress(item)}>
               <View style={styles.bookItem}>
-                <Text>name : {item.name}</Text>
-                <Text>author : {item.author}</Text>
-                <Text>publisher : {item.publisher}</Text>
-                <Text>genre : {item.genre}</Text>
-                <Text>price : {item.price}</Text>
-                <Pressable onPress={() => addToCart(item)}>
-                  <Text style={styles.addToCartButton}>Add to Cart</Text>
-                </Pressable>
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.bookImage}
+                />
+                <View style={styles.bookInfoContainer}>
+                  <Text style={styles.bookTitle}>{item.name}</Text>
+                  <Text style={styles.bookDetails}>Author: {item.author}</Text>
+                  <Text style={styles.bookDetails}>Publisher: {item.publisher}</Text>
+                  <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
+                  <Text style={styles.bookDetails}>Price: {item.price}</Text>
+                  <Pressable onPress={() => addToCart(item)} style={styles.addToCartButton}>
+                    <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+                  </Pressable>
+                </View>
               </View>
             </Pressable>
           )}
@@ -184,32 +177,57 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: wp('5%'),
     backgroundColor: "#fff",
   },
   searchInput: {
-    height: 40,
+    height: hp('5%'),
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 15,
+    marginBottom: hp('1%'),
+    paddingHorizontal: wp('2%'),
+    borderRadius: wp('4%'),
   },
   sortContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginBottom: hp('1%'),
   },
   bookItem: {
-    marginBottom: 10,
+    marginBottom: hp('1%'),
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    padding: wp('2%'),
+    borderRadius: wp('4%'),
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  bookImage: {
+    width: wp('30%'),
+    height: hp('20%'),
+    marginRight: wp('2%'),
+    borderRadius: wp('4%'),
+  },
+  bookInfoContainer: {
+    flex: 1,
+  },
+  bookTitle: {
+    fontSize: hp('2.2%'),
+    fontWeight: "bold",
+    marginBottom: hp('1%'),
+  },
+  bookDetails: {
+    marginBottom: hp('1%'),
   },
   addToCartButton: {
-    marginTop: 10,
-    color: "blue",
+    marginTop: hp('1%'),
+    padding: hp('1%'),
+    backgroundColor: "#ca6128",
+    borderRadius: wp('4%'),
+    alignSelf: "flex-start",
+  },
+  addToCartButtonText: {
+    color: "#fff",
     fontWeight: "bold",
-    textAlign: "center",
   },
 });

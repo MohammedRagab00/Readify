@@ -1,19 +1,11 @@
-import { View, Text, Pressable } from "react-native";
-import React from "react";
-import { Link } from "expo-router";
+import { View, Text ,ActivityIndicator} from 'react-native'
+import React from 'react'
 
-export default function Page() {
+
+export default function StartPage() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 30 }}>Welcome</Text>
-
-      <Link href={"/(tabs)/feed"} asChild>
-        <Pressable style={{ backgroundColor: "#0ff" }}>
-          <Text style={{ fontSize: 17, fontWeight: "500" }}>
-            Go To Our Book Store
-          </Text>
-        </Pressable>
-      </Link>
+    <View className="flix-1 justify-center item-center">
+        <ActivityIndicator size="large" color="gray" />
     </View>
-  );
+  )
 }

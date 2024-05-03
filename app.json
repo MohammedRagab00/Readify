@@ -1,7 +1,10 @@
 {
+  "dependencies": {
+    "react-native-reanimated": "~3.6.3"
+  },
   "expo": {
-    "name": "Book-Exchange-Platform_02",
-    "slug": "Book-Exchange-Platform_02",
+    "name": "TalkWave",
+    "slug": "TalkWave",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +25,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.TalkWave"
     },
     "web": {
       "bundler": "metro",
