@@ -100,7 +100,7 @@ export default function TabOneScreen() {
         >
           <Text style={{ color: "white" }}>Name</Text>
         </Pressable>
-        <Pressable
+        {/* <Pressable
           onPress={() => setSortBy("price")}
           style={({ pressed }) => [
             {
@@ -138,7 +138,64 @@ export default function TabOneScreen() {
           ]}
         >
           <Text style={{ color: "white" }}>Genre</Text>
-        </Pressable>
+        </Pressable> */}
+        <Pressable
+  onPress={() => setSortBy("name")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Name</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("price")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Price</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("publisher")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Publisher</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("genre")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Genre</Text>
+</Pressable>
+
       </View>
       {loading ? (
        <View style={{justifyContent:"center",alignItems:"center"}}>
