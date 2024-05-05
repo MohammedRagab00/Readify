@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
-
 import {
   StyleSheet,
   TextInput,
@@ -20,9 +19,7 @@ import {
 import Loading from "../../components/Loading";
 import { db } from "../../firebaseConfig";
 import { Image } from "expo-image";
-import { Route } from "expo-router/build/Route";
 import { router } from "expo-router";
-
 export default function TabOneScreen() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,10 +61,8 @@ export default function TabOneScreen() {
   };
 
   const handleBookPress = (item) => {
-    router.push(`ItemDetails?item=${item}`);
-    // router.push("ItemDetails", { id: itemId });
-  };
 
+  };
   const addToCart = (item) => {
     Alert.alert("Added to Cart", `${item.name} added to cart.`);
   };
@@ -93,6 +88,7 @@ export default function TabOneScreen() {
     : filteredBooks;
 
   return (
+
     <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
@@ -101,33 +97,29 @@ export default function TabOneScreen() {
         value={searchQuery}
       />
       <View style={styles.sortContainer}>
-        <Text style={{ fontWeight: "bold", marginTop: hp("1.5%") }}>
+      <Text style={{ fontWeight: "bold", marginTop: hp("1.5%") }}>
           Sort by:
-        </Text>
-
-        <Pressable
+        </Text>        <Pressable
           onPress={() => setSortBy("name")}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
           <Text style={{ color: "white" }}>Name</Text>
         </Pressable>
-        <Pressable
+        {/* <Pressable
           onPress={() => setSortBy("price")}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -138,10 +130,9 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
@@ -152,15 +143,71 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: hp('1%'),
+              margin: wp('1%'),
+              borderRadius: wp('2%'),
             },
           ]}
         >
           <Text style={{ color: "white" }}>Genre</Text>
-        </Pressable>
+        </Pressable> */}
+        <Pressable
+  onPress={() => setSortBy("name")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Name</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("price")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Price</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("publisher")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Publisher</Text>
+</Pressable>
+<Pressable
+  onPress={() => setSortBy("genre")}
+  style={({ pressed }) => [
+    {
+      backgroundColor: pressed ? "#874f1f" : "#ca6128",
+      padding: hp('1%'),
+      marginVertical: hp('1%'),
+      marginHorizontal: wp('1%'),
+      borderRadius: wp('2%'),
+    },
+  ]}
+>
+  <Text style={{ color: "white" }}>Genre</Text>
+</Pressable>
+
       </View>
       {loading ? (
         <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -256,5 +303,9 @@ const styles = StyleSheet.create({
   addToCartButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  sort: {
+    flexDirection: "row",
+    width: "115%",
   },
 });
