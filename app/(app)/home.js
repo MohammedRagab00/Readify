@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, addDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import {
@@ -20,6 +20,7 @@ import Loading from "../../components/Loading";
 import { db } from "../../firebaseConfig";
 import { Image } from "expo-image";
 import { router } from "expo-router";
+
 export default function TabOneScreen() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,8 +64,16 @@ export default function TabOneScreen() {
   const handleBookPress = (item) => {
     router.push(`ItemDetails?item=${item}`);
   };
-  const addToCart = (item) => {
-    Alert.alert("Added to Cart", `${item.name} added to cart.`);
+
+  const addToCart = async (item) => {
+    try {
+      const cartRef = collection(db, "Cart");
+      await addDoc(cartRef, item);
+      Alert.alert("Added to Cart", `${item.name} added to cart.`);
+    } catch (error) {
+      console.error("Error adding item to cart: ", error);
+      Alert.alert("Error", "Failed to add item to cart.");
+    }
   };
 
   const filteredBooks = books.filter(
@@ -99,46 +108,6 @@ export default function TabOneScreen() {
         <Text style={{ fontWeight: "bold", marginTop: hp("1.5%") }}>
           Sort by:
         </Text>
-
-        {/* <Pressable
-          onPress={() => setSortBy("price")}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp('1%'),
-              margin: wp('1%'),
-              borderRadius: wp('2%'),
-            },
-          ]}
-        >
-          <Text style={{ color: "white" }}>Price</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setSortBy("publisher")}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp('1%'),
-              margin: wp('1%'),
-              borderRadius: wp('2%'),
-            },
-          ]}
-        >
-          <Text style={{ color: "white" }}>Publisher</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setSortBy("genre")}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp('1%'),
-              margin: wp('1%'),
-              borderRadius: wp('2%'),
-            },
-          ]}
-        >
-          <Text style={{ color: "white" }}>Genre</Text>
-        </Pressable> */}
         <Pressable
           onPress={() => setSortBy("name")}
           style={({ pressed }) => [
