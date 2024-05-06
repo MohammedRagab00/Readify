@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-na
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProfilePage = ({ userName }) => {
+const ProfilePage = ({ userName, email }) => {
   const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
@@ -59,7 +59,8 @@ const ProfilePage = ({ userName }) => {
           )}
         </View>
       </TouchableOpacity>
-      <Text style={styles.userName}>{userName}</Text>
+      <Text style={styles.userName}>Name : {userName} </Text>
+      <Text style={styles.userEmail}>Email : {email}</Text>
     </View>
   );
 };
@@ -69,13 +70,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'white',
+    marginBottom:'100%'
   },
   photoContainer: {
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: '#ddd',
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
@@ -87,12 +89,18 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     fontSize: 16,
-    color: '#555',
+    color: 'black',
   },
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'black',
+    marginTop: 20,
+  },
+  userEmail: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black',
   },
 });
 

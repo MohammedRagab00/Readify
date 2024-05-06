@@ -37,7 +37,7 @@ export default function HomeHeader() {
     
     <View style={{paddingTop: ios? top:top+10, backgroundColor:"#ca6128"}} className ="flex-row justify-between px-5 pb-6 rounded-b-3xl shadow"> 
       <View>
-        <Text style={{fontSize:hp(4)}} className="font-medium text-white ">BookStack </Text>
+        <Text style={{fontSize:hp(4)}} className="font-medium text-white ">Home </Text>
       </View>
 
       <View>
