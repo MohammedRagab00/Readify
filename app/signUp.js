@@ -7,7 +7,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CustomKeyBoardView from '../components/CustomKeyBoardView';
 import { register , sendVerificationEmail} from '../fireBase/auth';
-import { sendEmailVerification } from 'firebase/auth';
+// import { sendEmailVerification } from 'firebase/auth';
 
 export default function SignUp() {
     const router = useRouter();

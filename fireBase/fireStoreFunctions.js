@@ -10,33 +10,33 @@ import {
   where,
   onSnapshot,
 } from "firebase/firestore";
-// Get a list of cities from your database
-async function getProducts() {
-  const products = collection(db, "products");
-  const productSnapshot = await getDocs(products);
-  const productList = productSnapshot.docs.map((doc) => {
+// Get a list of books from your database
+async function getbooks() {
+  const books = collection(db, "books");
+  const booksnapshot = await getDocs(books);
+  const bookList = booksnapshot.docs.map((doc) => {
     return { id: doc.id, ...doc.data() };
   });
-  return productList;
+  return bookList;
 }
 
-async function editCity(city) {
-  console.log("at editCity", city);
-  await setDoc(doc(db, "cities", city.id), city);
+async function editbook(book) {
+  console.log("at editbook", book);
+  await setDoc(doc(db, "books", book.id), book);
 }
 
-async function deleteCity(id) {
+async function deletebook(id) {
   try {
-    await deleteDoc(doc(db, "cities", id));
+    await deleteDoc(doc(db, "books", id));
     console.log("Document deleted with ID: ", id);
   } catch (error) {
     console.error("Error deleting document: ", error);
   }
 }
 
-async function addProduct(product) {
+async function addbook(book) {
   try {
-    const docRef = await addDoc(collection(db, "products"), product);
+    const docRef = await addDoc(collection(db, "books"), book);
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     console.error("Error adding document: ", e);
@@ -45,7 +45,7 @@ async function addProduct(product) {
 
 function subscribe(callback) {
   const unsubscribe = onSnapshot(
-    query(collection(db, "cities")),
+    query(collection(db, "books")),
     (snapshot) => {
       const source = snapshot.metadata.hasPendingWrites ? "Local" : "Server";
       snapshot.docChanges().forEach((change) => {
@@ -58,4 +58,4 @@ function subscribe(callback) {
   return unsubscribe;
 }
 
-export { getProducts, addProduct, editCity, deleteCity, subscribe };
+export { getbooks, addbook, editbook, deletebook, subscribe };

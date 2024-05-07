@@ -51,26 +51,26 @@ export const AuthContexProvider = ({ children }) => {
         }
     }
 
-    const register = async (email, password, username) => {
-        try {
-            const response = await createUserWithEmailAndPassword(auth,email,password);
-            console.log ('response:',response?.user);
-            // setUser(response?.user);
-            // setIsAuthenticated(true);
-            await setDoc(doc(db,"users",response?.user?.uid),{
-                username,userId:response?.user?.uid
-            });
-            return {success:true,data : response?.user};
-        } catch (e) {
-            let msg = e.message;
-            if(msg.includes('(auth/invalid-email)'))msg='invalid email'
-            if(msg.includes('(auth/email-already-in-use)'))msg='email already used'
-           return{success:false,msg};
-        }
-    }
+    // const register = async (email, password, username) => {
+    //     try {
+    //         const response = await createUserWithEmailAndPassword(auth,email,password);
+    //         console.log ('response:',response?.user);
+    //         // setUser(response?.user);
+    //         // setIsAuthenticated(true);
+    //         await setDoc(doc(db,"users",response?.user?.uid),{
+    //             username,userId:response?.user?.uid
+    //         });
+    //         return {success:true,data : response?.user};
+    //     } catch (e) {
+    //         let msg = e.message;
+    //         if(msg.includes('(auth/invalid-email)'))msg='invalid email'
+    //         if(msg.includes('(auth/email-already-in-use)'))msg='email already used'
+    //        return{success:false,msg};
+    //     }
+    // }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
