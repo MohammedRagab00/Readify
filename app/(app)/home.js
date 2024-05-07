@@ -10,13 +10,7 @@ import {
   View,
   Text,
   Pressable,
-  ActivityIndicator,
 } from "react-native";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import Loading from "../../components/Loading";
 import { db } from "../../firebaseConfig";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -105,18 +99,16 @@ export default function TabOneScreen() {
         value={searchQuery}
       />
       <View style={styles.sortContainer}>
-        <Text style={{ fontWeight: "bold", marginTop: hp("1.5%") }}>
-          Sort by:
-        </Text>
+        <Text style={{ fontWeight: "bold", marginTop: 10 }}>Sort by:</Text>
         <Pressable
           onPress={() => setSortBy("name")}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: 10,
+              marginVertical: 10,
+              marginHorizontal: 10,
+              borderRadius: 8,
             },
           ]}
         >
@@ -127,10 +119,10 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: 10,
+              marginVertical: 10,
+              marginHorizontal: 10,
+              borderRadius: 8,
             },
           ]}
         >
@@ -141,10 +133,10 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: 10,
+              marginVertical: 10,
+              marginHorizontal: 10,
+              borderRadius: 8,
             },
           ]}
         >
@@ -155,10 +147,10 @@ export default function TabOneScreen() {
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              padding: 10,
+              marginVertical: 10,
+              marginHorizontal: 10,
+              borderRadius: 8,
             },
           ]}
         >
@@ -167,7 +159,7 @@ export default function TabOneScreen() {
       </View>
       {loading ? (
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Loading size={hp(8)} />
+          <Text>Loading...</Text>
         </View>
       ) : (
         <FlatList
@@ -207,61 +199,64 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: wp("5%"),
+    padding: 20,
     backgroundColor: "#fff",
   },
   searchInput: {
-    height: hp("5%"),
+    height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: hp("1%"),
-    paddingHorizontal: wp("2%"),
-    borderRadius: wp("4%"),
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 8,
   },
   sortContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: hp("1%"),
+    marginBottom: 10,
   },
   bookItem: {
-    marginBottom: hp("1%"),
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: wp("2%"),
-    borderRadius: wp("4%"),
+    padding: 10,
+    borderRadius: 8,
     flexDirection: "row",
     alignItems: "center",
   },
   bookImage: {
-    width: wp("30%"),
-    height: hp("20%"),
-    marginRight: wp("2%"),
-    borderRadius: wp("4%"),
+    width: 120,
+    height: 190,
+      borderWidth: 1,
+      borderColor: "#ccc",
+      paddingHorizontal: 20, 
+      paddingVertical: 10, 
+      borderRadius: 8, 
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight:10 
+    
   },
   bookInfoContainer: {
     flex: 1,
   },
   bookTitle: {
-    fontSize: hp("2.2%"),
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: hp("1%"),
+    marginBottom: 10,
   },
   bookDetails: {
-    marginBottom: hp("1%"),
+    marginBottom: 10,
   },
   addToCartButton: {
-    marginTop: hp("1%"),
-    padding: hp("1%"),
+    marginTop: 10,
+    padding: 10,
     backgroundColor: "#ca6128",
-    borderRadius: wp("4%"),
+    borderRadius: 8,
     alignSelf: "flex-start",
   },
   addToCartButtonText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  sort: {
-    flexDirection: "row",
-    width: "115%",
   },
 });

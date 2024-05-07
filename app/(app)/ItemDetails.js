@@ -11,10 +11,6 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
@@ -63,7 +59,7 @@ export default function ItemDetails() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
@@ -71,7 +67,7 @@ export default function ItemDetails() {
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.errorContainer}>
         <Text>Error: {error}</Text>
       </View>
     );
@@ -79,10 +75,10 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ height: "63%", borderColor: "#874f1f", borderWidth: 8 }}>
+      <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
-      <View>
+      <View style={styles.detailsContainer}>
         <Text style={[styles.text, { fontSize: 27 }]}>Book's Name: {name}</Text>
         <Text style={[styles.text, { fontWeight: "bold" }]}>
           Written by {author}
@@ -97,20 +93,18 @@ export default function ItemDetails() {
           Genre: {genre}
         </Text>
         <Text style={[styles.text, { fontWeight: "bold" }]}>
-          Price: {price}
-          <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
+          Price: {price} <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
         </Text>
       </View>
-      <View style={styles.button}>
+      <View style={styles.buttonContainer}>
         <Pressable
           onPress={() => handleAddToChart(item.id)}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
-              padding: hp("1%"),
-              marginVertical: hp("1%"),
-              marginHorizontal: wp("1%"),
-              borderRadius: wp("2%"),
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 8,
               alignItems: "center",
             },
           ]}
@@ -126,20 +120,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 6,
-    // backgroundColor: "#f5b596",
+  },
+  imageContainer: {
+    height: "63%",
+    borderColor: "#874f1f",
+    borderWidth: 8,
   },
   image: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
+    width: null,
+    height: null,
+    resizeMode: "cover",
   },
-  button: {
-    // backgroundColor: "#",
+  detailsContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+  },
+  buttonContainer: {
+    alignItems: "center",
   },
   text: {
-    paddingHorizontal: 7,
-    paddingVertical: 4,
     fontSize: 17,
     fontWeight: "500",
-    // color: "#fff",
+    marginBottom: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

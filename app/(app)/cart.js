@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import CustomCartHeader from "../../components/CustomCartHeader";
+import { useRouter } from 'expo-router';
 
 export default function Cart() {
+  const router = useRouter();
   const [items, setItems] = useState([
     { id: 1, name: 'Item 1', description: 'Description 1', quantity: 1, price: 8 },
     { id: 2, name: 'Item 2', description: 'Description 2', quantity: 1, price: 8 },
@@ -52,6 +55,7 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
+      <CustomCartHeader router={router}/>
       <Text style={styles.title}>CART</Text>
       <FlatList
         data={items}

@@ -2,10 +2,9 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import HomeHeader from "../../components/HomeHeader";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import CustomCartHeader from "../../components/CustomCartHeader";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+
 export default function _layout() {
   return (
     <Stack>
@@ -15,6 +14,7 @@ export default function _layout() {
           header: () => <HomeHeader />,
         }}
       />
+        
       {/* <Stack.Screen
         name="ItemDetails"
         options={{
