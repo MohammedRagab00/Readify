@@ -28,7 +28,6 @@ const ProfilePage = ({ userName, email }) => {
       console.error('Error saving photo:', error.message);
     }
   };
-  
 
   const handleUploadPhoto = async () => {
     try {
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
-    marginBottom:'100%'
+    marginBottom: '100%'
   },
   photoContainer: {
     width: 150,

@@ -1,16 +1,16 @@
-import { View, Image, Text, TextInput, Pressable, Alert } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { View, Image, Text, TextInput, Pressable, Alert } from 'react-native';
+import React, { useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Foundation } from '@expo/vector-icons';
 import Loading from '../components/Loading';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CustomKeyBoardView from '../components/CustomKeyBoardView';
-import { useAuth } from '../context/authContex';
+import { register , sendVerificationEmail} from '../fireBase/auth';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function SignUp() {
     const router = useRouter();
-    const { register } = useAuth();
     const [loading, setLoading] = useState(false);
     const emailRef = useRef("");
     const passwordRef = useRef("");
@@ -22,13 +22,30 @@ export default function SignUp() {
             return;
         }
         setLoading(true);
-        let response = await register(emailRef.current, passwordRef.current, usernameRef.current);
-        setLoading(false);
-        console.log('got result:', response);
-        if (!response.success) {
-            Alert.alert('Sign Up', response.msg);
+        try {
+            // Register the user
+            const response = await register(emailRef.current, passwordRef.current);
+            
+            // If registration is successful
+            if (response.success) {
+                // Send verification email
+                await sendVerificationEmail(); // Ensure sendVerificationEmail is correctly implemented
+                setLoading(false);
+                Alert.alert('Sign Up', 'Registration successful. Please check your email for verification.');
+                // Redirect to sign-in page
+                router.push('signIn'); // Ensure router.push is correctly configured
+            } else {
+                setLoading(false);
+                Alert.alert('Sign Up', response.msg);
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error('Error registering user:', error);
+            Alert.alert('Sign Up', 'An error occurred during registration. Please try again later.');
         }
     }
+    
+    
 
     return (
         <CustomKeyBoardView>
@@ -90,5 +107,5 @@ export default function SignUp() {
                 </View>
             </View>
         </CustomKeyBoardView>
-    )
+    );
 }

@@ -1,16 +1,16 @@
-import { View, Image, Text, TextInput, Pressable, Alert } from "react-native";
 import React, { useRef, useState } from "react";
+import { View, Image, Text, TextInput, Pressable, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Foundation } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import Loading from "../components/Loading";
 import CustomKeyBoardView from "../components/CustomKeyBoardView";
-import { useAuth } from "../context/authContex";
+import Loading from "../components/Loading";
+import { signInWithEmailAndPassword } from "../fireBase/auth"; // Import signInWithEmailAndPassword function
+import { resetPass } from "../fireBase/auth"; // Import resetPass function
 
 export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const emailRef = useRef("");
   const passwordRef = useRef("");
 
@@ -20,14 +20,26 @@ export default function SignIn() {
       return;
     }
     setLoading(true);
-    const response = await login(emailRef.current, passwordRef.current);
-    setLoading(false);
-    console.log("re", response);
-    if (!response.success) {
-      Alert.alert("Sign In", response.msg);
-      return;
+    try {
+      await signInWithEmailAndPassword(emailRef.current, passwordRef.current);
+      setLoading(false);
+      console.log("User logged in successfully");
+      router.replace("home");
+    } catch (error) {
+      setLoading(false);
+      console.error("Error logging in:", error.message);
+      Alert.alert("Sign In", error.message);
     }
-    router.replace("home");
+  };
+  
+  const handleForgotPass = async () => {
+    try {
+      await resetPass(emailRef.current); // Call resetPass function
+      Alert.alert("Forgot Password", "Please check your email to reset your password");
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      Alert.alert("Forgot Password", "Error sending password reset email");
+    }
   };
 
   return (
@@ -65,7 +77,8 @@ export default function SignIn() {
                   placeholderTextColor={"gray"}
                 />
               </View>
-              <Text style={{ fontSize: 14, fontWeight: "bold", textAlign: "right", color: "#555", marginTop: 10 }}>Forgot Password?</Text>
+             
+              
             </View>
             <View style={{ marginTop: 20 }}>
               {loading ? (
@@ -79,9 +92,14 @@ export default function SignIn() {
                 >
                   <Text style={{ fontSize: 20, color: "white", fontWeight: "bold" }}>Submit</Text>
                 </Pressable>
+              
               )}
             </View>
+            <Pressable onPress={handleForgotPass}>
+                  <Text style={{ fontSize: 14, fontWeight: "bold", color: "#ca6128", textAlign: "right", marginTop: 5 }}>Forgot Password ?</Text>
+                </Pressable>
             <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+            
               <Text style={{ fontSize: 14, fontWeight: "bold", color: "#777" }}>Don't have an account? </Text>
               <Pressable onPress={() => router.push("signUp")}>
                 <Text style={{ fontSize: 14, fontWeight: "bold", color: "#ca6128" }}>Sign up</Text>
