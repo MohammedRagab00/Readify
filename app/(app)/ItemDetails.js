@@ -93,7 +93,8 @@ export default function ItemDetails() {
           Genre: {genre}
         </Text>
         <Text style={[styles.text, { fontWeight: "bold" }]}>
-          Price: {price} <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
+          Price: {price}{" "}
+          <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
         </Text>
       </View>
       <View style={styles.buttonContainer}>
@@ -104,8 +105,9 @@ export default function ItemDetails() {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
               paddingVertical: 10,
               paddingHorizontal: 20,
-              borderRadius: 8,
+              borderRadius: 20,
               alignItems: "center",
+              alignSelf: "stretch",
             },
           ]}
         >
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   imageContainer: {
-    height: "63%",
+    height: "60%",
     borderColor: "#874f1f",
     borderWidth: 8,
   },
