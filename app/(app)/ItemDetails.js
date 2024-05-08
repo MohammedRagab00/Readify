@@ -11,6 +11,7 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import CustomItemHeader from "../../components/CustomItemHeader";
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
@@ -75,6 +76,7 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <CustomItemHeader/>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
@@ -120,8 +122,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 6,
+    paddingTop:10
   },
   imageContainer: {
+    
     height: "63%",
     borderColor: "#874f1f",
     borderWidth: 8,
