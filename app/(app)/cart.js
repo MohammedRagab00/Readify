@@ -5,11 +5,26 @@ import { useRouter } from 'expo-router';
 
 export default function Cart() {
   const router = useRouter();
-  const [items, setItems] = useState([
-    { id: 1, name: 'Item 1', description: 'Description 1', quantity: 1, price: 8 },
-    { id: 2, name: 'Item 2', description: 'Description 2', quantity: 1, price: 8 },
-    { id: 3, name: 'Item 3', description: 'Description 3', quantity: 1, price: 155 },
-  ]);
+  const [items, setItems] = useState([]);
+
+
+  // fun add to check if book in cart or not , if yes just increase quantity , if not , add and set quantity to 1
+//(هل الكتاب اصلا موجود؟ لو اه هتزود واحد ....(لو لا هتضيفه بكمية واحد بالعربي عشان مينا ميزعلش"
+
+const addToCart = (book) => {
+  const existingItem = items.find((item) => item.id === book.id);
+
+  if (existingItem) {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === book.id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  } else {
+    setItems((prevItems) => [...prevItems, { ...book, quantity: 1 }]);
+  }
+};
+
 
   const handleIncrement = (id) => {
     setItems((prevItems) =>
