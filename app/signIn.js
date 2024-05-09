@@ -5,7 +5,7 @@ import { Foundation } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import CustomKeyBoardView from "../components/CustomKeyBoardView";
 import Loading from "../components/Loading";
-import { signInWithEmailAndPassword } from "../fireBase/auth"; // Import signInWithEmailAndPassword function
+import { login } from "../fireBase/auth"; // Import signInWithEmailAndPassword function
 import { resetPass } from "../fireBase/auth"; // Import resetPass function
 
 export default function SignIn() {
@@ -21,7 +21,7 @@ export default function SignIn() {
     }
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(emailRef.current, passwordRef.current);
+      await login(emailRef.current, passwordRef.current);
       setLoading(false);
       console.log("User logged in successfully");
       router.replace("home");
