@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomProfileHeader from '../../components/CustomProfileHeader';
+import { useRouter } from 'expo-router';
 
 const ProfilePage = ({ userName, email }) => {
   const [photo, setPhoto] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchPhoto();
@@ -49,6 +52,7 @@ const ProfilePage = ({ userName, email }) => {
 
   return (
     <View style={styles.container}>
+      <CustomProfileHeader router={router}/>
       <TouchableOpacity onPress={handleUploadPhoto}>
         <View style={styles.photoContainer}>
           {photo ? (

@@ -14,13 +14,14 @@ export default function _layout() {
           header: () => <HomeHeader />,
         }}
       />
-        
-      {/* <Stack.Screen
+
+      <Stack.Screen
         name="ItemDetails"
         options={{
-          headerShown: false,
+          // headerShown: false,
+          headerTitle: "",
         }}
-      /> */}
+      />
     </Stack>
   );
 }

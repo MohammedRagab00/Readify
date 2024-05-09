@@ -11,6 +11,7 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import CustomItemHeader from "../../components/CustomItemHeader";
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
@@ -75,6 +76,7 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <CustomItemHeader/>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
@@ -93,7 +95,8 @@ export default function ItemDetails() {
           Genre: {genre}
         </Text>
         <Text style={[styles.text, { fontWeight: "bold" }]}>
-          Price: {price} <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
+          Price: {price}{" "}
+          <Text style={{ fontSize: 13, fontWeight: "500" }}>EGP</Text>
         </Text>
       </View>
       <View style={styles.buttonContainer}>
@@ -104,8 +107,9 @@ export default function ItemDetails() {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
               paddingVertical: 10,
               paddingHorizontal: 20,
-              borderRadius: 8,
+              borderRadius: 20,
               alignItems: "center",
+              alignSelf: "stretch",
             },
           ]}
         >
@@ -120,6 +124,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 6,
+    paddingTop:10
   },
   imageContainer: {
     height: "63%",

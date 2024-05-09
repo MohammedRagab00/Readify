@@ -99,7 +99,7 @@ export default function TabOneScreen() {
         value={searchQuery}
       />
       <View style={styles.sortContainer}>
-        <Text style={{ fontWeight: "bold", marginTop: 10 }}>Sort by:</Text>
+        <Text style={{ fontWeight: "bold", marginTop: 20 }}>Sort by :</Text>
         <Pressable
           onPress={() => setSortBy("name")}
           style={({ pressed }) => [
