@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList , Alert } from 'react-native';
 import CustomCartHeader from "../../components/CustomCartHeader";
 import { useRouter } from 'expo-router';
 import { collection, getDocs } from 'firebase/firestore';
@@ -10,7 +10,6 @@ import { getUserId, removeFromCart } from '../../fireBase/fireStoreFunctions';
 export default function Cart() {
   const router = useRouter();
   const [items, setItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0); // State to hold the total price
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -18,11 +17,6 @@ export default function Cart() {
       fetchCartItems();
     }
   }, [user]);
-
-  useEffect(() => {
-    // Recalculate total price whenever items change 
-    calculateTotalPrice();
-  }, [items]);
 
   const fetchCartItems = async () => {
     try {
@@ -37,12 +31,6 @@ export default function Cart() {
     } catch (error) {
       console.error("Error fetching cart items: ", error);
     }
-  };
-
-  const calculateTotalPrice = () => {
-    // Calculate total price of all items in the cart
-    const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    setTotalPrice(total);
   };
 
   const handleIncrement = (id) => {
@@ -100,14 +88,14 @@ export default function Cart() {
       <CustomCartHeader router={router}/>
       <Text style={styles.title}>CART</Text>
       <FlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
-      />
+  data={items}
+  renderItem={renderItem}
+  keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
+/>
+
       <Text style={styles.additionalInfo}>
         *Shipping charges, taxes, and discount codes are calculated at the time of checkout.
       </Text>
-      <Text style={styles.totalPrice}>Total Price: ${totalPrice.toString()}</Text>
       <TouchableOpacity style={styles.buyButton}>
         <Text style={styles.buyButtonText}>Buy</Text>
       </TouchableOpacity>
@@ -180,10 +168,5 @@ const styles = StyleSheet.create({
   buyButtonText: {
     color: 'white',
     fontWeight: 'bold',
-  },
-  totalPrice: {
-    marginTop: 10,
-    fontWeight: 'bold',
-    fontSize: 18,
   },
 });

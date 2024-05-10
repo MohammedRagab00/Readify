@@ -25,18 +25,12 @@ export default function SignUp() {
         try {
             // Register the user
             const response = await register(emailRef.current, passwordRef.current , usernameRef.current);
-            
-            // If registration is successful
+            router.push('signIn'); 
+
             if (response.success) {
-                // Send verification email
-                await sendVerificationEmail(); // Ensure sendVerificationEmail is correctly implemented
                 setLoading(false);
-                Alert.alert('Sign Up', 'Registration successful. Please check your email for verification.');
-                // Redirect to sign-in page
-                router.push('signIn'); // Ensure router.push is correctly configured
             } else {
                 setLoading(false);
-                Alert.alert('Sign Up', response.msg);
             }
         } catch (error) {
             setLoading(false);

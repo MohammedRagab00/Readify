@@ -10,6 +10,8 @@ import {
   sendEmailVerification,
   signOut
 } from "firebase/auth";
+import { router } from "expo-router";
+import { Alert } from "react-native";
 import {
   getDocs,
   doc,
@@ -30,15 +32,17 @@ onAuthStateChanged(auth, (user) => {
 async function register(email, password, name) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    
+          await sendVerificationEmail(); // Ensure sendVerificationEmail is correctly implemented
+                Alert.alert('Sign Up', 'Registration successful. Please check your email for verification.');
+
     // Create a user document in Firestore
     const userDocRef = doc(db, 'users', cred.user.uid);
 
     await setDoc(userDocRef, {
       email: email,
       name: name,
-      cart: [] 
     });
+    router.push('signIn'); 
 
     console.log('User registered successfully:', cred.user.uid);
     return cred; 
