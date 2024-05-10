@@ -10,6 +10,7 @@ import { getUserId, removeFromCart } from '../../fireBase/fireStoreFunctions';
 export default function Cart() {
   const router = useRouter();
   const [items, setItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0); // State to hold the total price
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -17,6 +18,11 @@ export default function Cart() {
       fetchCartItems();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Recalculate total price whenever items change 
+    calculateTotalPrice();
+  }, [items]);
 
   const fetchCartItems = async () => {
     try {
@@ -31,6 +37,12 @@ export default function Cart() {
     } catch (error) {
       console.error("Error fetching cart items: ", error);
     }
+  };
+
+  const calculateTotalPrice = () => {
+    // Calculate total price of all items in the cart
+    const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    setTotalPrice(total);
   };
 
   const handleIncrement = (id) => {
@@ -88,11 +100,10 @@ export default function Cart() {
       <CustomCartHeader router={router}/>
       <Text style={styles.title}>CART</Text>
       <FlatList
-  data={items}
-  renderItem={renderItem}
-  keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
-/>
-
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
+      />
       <Text style={styles.additionalInfo}>
         *Shipping charges, taxes, and discount codes are calculated at the time of checkout.
       </Text>
@@ -129,8 +140,8 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Adjusted alignment
-    width: 60, // Adjusted width to fit buttons
+    justifyContent: 'space-between',
+    width: 60,
   },
   button: {
     backgroundColor: '#ca6128',

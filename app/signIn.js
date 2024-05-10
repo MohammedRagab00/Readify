@@ -58,7 +58,6 @@ export default function SignIn() {
       } else {
         router.replace("home");
       }
-    }
   };
 
   const handleForgotPass = async () => {

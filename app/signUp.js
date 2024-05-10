@@ -23,12 +23,16 @@ export default function SignUp() {
         }
         setLoading(true);
         try {
-            // Register the user
             const response = await register(emailRef.current, passwordRef.current , usernameRef.current);
-            router.push('signIn'); 
-
+            
+            // If registration is successful
             if (response.success) {
+                // Send verification email
+                await sendVerificationEmail(); // Ensure sendVerificationEmail is correctly implemented
                 setLoading(false);
+                Alert.alert('Sign Up', 'Registration successful. Please check your email for verification.');
+                // Redirect to sign-in page
+                router.push('signIn'); // Ensure router.push is correctly configured
             } else {
                 setLoading(false);
             }
@@ -36,7 +40,7 @@ export default function SignUp() {
             setLoading(false);
             console.error('Error registering user:', error);
     
-            // Check the type of error
+           
             if (error.code === 'auth/email-already-in-use') {
                 Alert.alert('Sign Up', 'The email address is already in use. Please use a different email address.');
             } else if (error.code === 'auth/weak-password') {

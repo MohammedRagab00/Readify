@@ -2,7 +2,7 @@ import { collection, getDoc, addDoc, doc } from 'firebase/firestore';
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import CustomProfileHeader from '../../components/CustomProfileHeader';
 import { useRouter } from 'expo-router';
 import firebase from 'firebase/app';

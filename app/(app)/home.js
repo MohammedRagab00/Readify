@@ -46,12 +46,12 @@ export default function TabOneScreen() {
         id: doc.id,
         ...doc.data(),
       }));
-      await AsyncStorage.setItem("books", JSON.stringify(booksData)); // Save books data in AsyncStorage
+      await AsyncStorage.setItem("books", JSON.stringify(booksData)); 
       setBooks(booksData);
-      setLoading(false); // Set loading to false once data is fetched
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching books: ", error);
-      setLoading(false); // Set loading to false in case of error
+      setLoading(false);
     }
   };
 
@@ -61,27 +61,21 @@ export default function TabOneScreen() {
 
   const addToCart = async (item) => {
     try {
-      const user = auth.currentUser; // Get the current user
+      const user = auth.currentUser;
       if (!user) {
-        // If user is not authenticated, prompt the user to sign in
         Alert.alert("Sign In Required", "Please sign in to add items to your cart.");
         return;
       }
       
       const userId = user.uid; 
       const cartRef = collection(db, `users/${userId}/cart`);
-      
-      // Fetch existing cart items for the user
       const cartSnapshot = await getDocs(cartRef);
       const existingCartItem = cartSnapshot.docs.find(doc => doc.data().id === item.id);
-  
       if (existingCartItem) {
-        // If the item already exists in the cart, update its quantity
         await updateDoc(existingCartItem.ref, {
           quantity: existingCartItem.data().quantity + 1
         });
       } else {
-        // If the item is not in the cart, add it with a quantity of 1
         await addDoc(cartRef, { ...item, quantity: 1 });
       }
   
@@ -209,12 +203,6 @@ export default function TabOneScreen() {
                   </Text>
                   <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
                   <Text style={styles.bookDetails}>Price: {item.price}</Text>
-                  <Pressable
-                    onPress={() => addToCart(item)}
-                    style={styles.addToCartButton}
-                  >
-                    <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-                  </Pressable>
                 </View>
               </View>
             </Pressable>
