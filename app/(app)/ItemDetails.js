@@ -12,10 +12,12 @@ import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import CustomItemHeader from "../../components/CustomItemHeader";
-import { addToCart, getUserId } from "../../fireBase/fireStoreFunctions";
+import { addToCart } from "../../fireBase/fireStoreFunctions";
+import { useRouter } from 'expo-router';
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -83,7 +85,7 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomItemHeader />
+      <CustomItemHeader router={router}/>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
