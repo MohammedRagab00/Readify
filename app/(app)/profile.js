@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   addButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#ca6128',
     padding: 10,
     borderRadius: 5,
   },
