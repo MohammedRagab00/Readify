@@ -5,8 +5,8 @@ import { Foundation } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import CustomKeyBoardView from "../components/CustomKeyBoardView";
 import Loading from "../components/Loading";
-import { login } from "../fireBase/auth"; // Import signInWithEmailAndPassword function
-import { resetPass } from "../fireBase/auth"; // Import resetPass function
+import { login } from "../fireBase/auth"; 
+import { resetPass } from "../fireBase/auth"; 
 
 export default function SignIn() {
   const router = useRouter();
@@ -34,12 +34,12 @@ export default function SignIn() {
       setLoading(false);
       let errorMessage = "An error occurred while signing in. Please try again.";
   
-      // Customize error messages based on error codes or types
       if (error.code === "auth/user-not-found") {
         errorMessage = "User not found. Please check your email and try again.";
       } else if (error.code === "auth/wrong-password") {
         errorMessage = "Incorrect password. Please try again.";
-      }
+      }else if (error.code === "auth/invalid-login-credentials") {
+        errorMessage = "Incorrect Credentials. Please check again.";}
   
       console.error("Error logging in:", error.message);
       Alert.alert("Sign In", errorMessage);
@@ -49,11 +49,9 @@ export default function SignIn() {
 
 
 
-  
-  
   const handleForgotPass = async () => {
     try {
-      await resetPass(emailRef.current); // Call resetPass function
+      await resetPass(emailRef.current);
       Alert.alert("Forgot Password", "Please check your email to reset your password");
     } catch (error) {
       console.error('Error sending password reset email:', error);

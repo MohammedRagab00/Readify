@@ -10,7 +10,7 @@ import { getUserId, removeFromCart } from '../../fireBase/fireStoreFunctions';
 export default function Cart() {
   const router = useRouter();
   const [items, setItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0); // State to hold the total price
+  const [totalPrice, setTotalPrice] = useState(0);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -20,7 +20,6 @@ export default function Cart() {
   }, [user]);
 
   useEffect(() => {
-    // Recalculate total price whenever items change
     calculateTotalPrice();
   }, [items]);
 
@@ -40,7 +39,6 @@ export default function Cart() {
   };
 
   const calculateTotalPrice = () => {
-    // Calculate total price of all items in the cart
     const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     setTotalPrice(total);
   };
@@ -102,7 +100,7 @@ export default function Cart() {
       <FlatList
         data={items}
         renderItem={renderItem}
-        keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
+        keyExtractor={(item, index) => item.id.toString() + index} 
       />
       <Text style={styles.additionalInfo}>
         *Shipping charges, taxes, and discount codes are calculated at the time of checkout.
@@ -141,8 +139,8 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Adjusted alignment
-    width: 60, // Adjusted width to fit buttons
+    justifyContent: 'space-between',
+    width: 60,
   },
   button: {
     backgroundColor: '#ca6128',
