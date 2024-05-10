@@ -91,10 +91,12 @@ export default function ItemDetails() {
     <SafeAreaView style={styles.container}>
       <CustomItemHeader router={router} />
       <FlatList
-        data={[book]}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+  data={[book]}
+  renderItem={renderItem}
+  keyExtractor={(item) => (item && item.id ? item.id.toString() : null)}
+/>
+
+
       <View style={styles.buttonContainer}>
         <Pressable
           onPress={handleAddToCart}
