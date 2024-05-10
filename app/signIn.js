@@ -14,12 +14,17 @@ export default function SignIn() {
   const emailRef = useRef("");
   const passwordRef = useRef("");
 
+
+
+
   const handleLogin = async () => {
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Sign in", "Please fill all the fields");
       return;
     }
+  
     setLoading(true);
+  
     try {
       await login(emailRef.current, passwordRef.current);
       setLoading(false);
@@ -27,10 +32,24 @@ export default function SignIn() {
       router.replace("home");
     } catch (error) {
       setLoading(false);
+      let errorMessage = "An error occurred while signing in. Please try again.";
+  
+      // Customize error messages based on error codes or types
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "User not found. Please check your email and try again.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Incorrect password. Please try again.";
+      }
+  
       console.error("Error logging in:", error.message);
-      Alert.alert("Sign In", error.message);
+      Alert.alert("Sign In", errorMessage);
     }
   };
+
+
+
+
+  
   
   const handleForgotPass = async () => {
     try {

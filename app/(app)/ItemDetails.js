@@ -12,6 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import CustomItemHeader from "../../components/CustomItemHeader";
+import { addToCart, getUserId } from "../../fireBase/fireStoreFunctions";
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
@@ -25,10 +26,7 @@ export default function ItemDetails() {
   const [publisher, setPublisher] = useState("");
   const [genre, setGenre] = useState("");
   const [rate, setRate] = useState(4.56);
-
-  const handleAddToChart = (item) => {
-    console.log("added");
-  };
+  const [items, setItems] = useState([]); // Initialize items as an empty array
 
   useEffect(() => {
     if (!item) return; // Exit early if item is undefined
@@ -58,6 +56,19 @@ export default function ItemDetails() {
     getDetails();
   }, [item]); // Make sure to re-fetch when item changes
 
+  const handleAddToCart = async (book) => {
+    try {
+      const userId = await getUserId(); // Get the user ID of the signed-in user
+
+      await addToCart(userId, book);
+
+      // Optional: Update the UI or perform any other actions after adding to cart
+    } catch (error) {
+      console.error("Error adding item to cart:", error.message);
+      // Optionally, handle the error and show an error message to the user
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -76,7 +87,7 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomItemHeader/>
+      <CustomItemHeader />
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
@@ -101,7 +112,7 @@ export default function ItemDetails() {
       </View>
       <View style={styles.buttonContainer}>
         <Pressable
-          onPress={() => handleAddToChart(item.id)}
+          onPress={() => handleAddToCart(item)}
           style={({ pressed }) => [
             {
               backgroundColor: pressed ? "#874f1f" : "#ca6128",
@@ -124,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 6,
-    paddingTop:10
+    paddingTop: 10,
   },
   imageContainer: {
     height: "63%",

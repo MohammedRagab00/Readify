@@ -1,30 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import CustomCartHeader from "../../components/CustomCartHeader";
 import { useRouter } from 'expo-router';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { auth } from '../../firebaseConfig';
+import { getUserId, removeFromCart } from '../../fireBase/fireStoreFunctions';
 
 export default function Cart() {
   const router = useRouter();
   const [items, setItems] = useState([]);
+  const user = auth.currentUser;
 
+  useEffect(() => {
+    if (user) {
+      fetchCartItems();
+    }
+  }, [user]);
 
-  // fun add to check if book in cart or not , if yes just increase quantity , if not , add and set quantity to 1
-//(هل الكتاب اصلا موجود؟ لو اه هتزود واحد ....(لو لا هتضيفه بكمية واحد بالعربي عشان مينا ميزعلش"
-
-const addToCart = (book) => {
-  const existingItem = items.find((item) => item.id === book.id);
-
-  if (existingItem) {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === book.id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  } else {
-    setItems((prevItems) => [...prevItems, { ...book, quantity: 1 }]);
-  }
-};
-
+  const fetchCartItems = async () => {
+    try {
+      const userId = user.uid;
+      const cartRef = collection(db, `users/${userId}/cart`);
+      const querySnapshot = await getDocs(cartRef);
+      const cartItems = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setItems(cartItems);
+    } catch (error) {
+      console.error("Error fetching cart items: ", error);
+    }
+  };
 
   const handleIncrement = (id) => {
     setItems((prevItems) =>
@@ -43,7 +50,15 @@ const addToCart = (book) => {
   };
 
   const handleDelete = (id) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+   const userId = getUserId();
+    removeFromCart(userId, id)
+      .then(() => {
+        setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      })
+      .catch((error) => {
+        console.error("Error deleting item from cart:", error);
+        Alert.alert("Error", "Failed to delete item from cart.");
+      });
   };
 
   const renderItem = ({ item }) => (
@@ -73,10 +88,11 @@ const addToCart = (book) => {
       <CustomCartHeader router={router}/>
       <Text style={styles.title}>CART</Text>
       <FlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+  data={items}
+  renderItem={renderItem}
+  keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
+/>
+
       <Text style={styles.additionalInfo}>
         *Shipping charges, taxes, and discount codes are calculated at the time of checkout.
       </Text>

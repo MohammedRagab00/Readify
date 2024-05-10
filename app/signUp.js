@@ -24,7 +24,7 @@ export default function SignUp() {
         setLoading(true);
         try {
             // Register the user
-            const response = await register(emailRef.current, passwordRef.current);
+            const response = await register(emailRef.current, passwordRef.current , usernameRef.current);
             
             // If registration is successful
             if (response.success) {
@@ -41,7 +41,15 @@ export default function SignUp() {
         } catch (error) {
             setLoading(false);
             console.error('Error registering user:', error);
-            Alert.alert('Sign Up', 'An error occurred during registration. Please try again later.');
+    
+            // Check the type of error
+            if (error.code === 'auth/email-already-in-use') {
+                Alert.alert('Sign Up', 'The email address is already in use. Please use a different email address.');
+            } else if (error.code === 'auth/weak-password') {
+                Alert.alert('Sign Up', 'The password is too weak. Please use a stronger password.');
+            } else {
+                Alert.alert('Sign Up', 'An error occurred during registration. Please try again later.');
+            }
         }
     }
     

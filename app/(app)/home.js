@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getDocs, collection, addDoc } from "firebase/firestore";
+import { getDocs, collection, addDoc , updateDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import {
@@ -11,7 +11,7 @@ import {
   Text,
   Pressable,
 } from "react-native";
-import { db } from "../../firebaseConfig";
+import { db , auth } from "../../fireBase/Config";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 
@@ -61,27 +61,50 @@ export default function TabOneScreen() {
 
   const addToCart = async (item) => {
     try {
-      const cartRef = collection(db, "Cart");
-      await addDoc(cartRef, item);
-      Alert.alert("Added to Cart", `${item.name} added to cart.`);
+      const user = auth.currentUser; // Get the current user
+      if (!user) {
+        // If user is not authenticated, prompt the user to sign in
+        Alert.alert("Sign In Required", "Please sign in to add items to your cart.");
+        return;
+      }
+      
+      const userId = user.uid; 
+      const cartRef = collection(db, `users/${userId}/cart`);
+      
+      // Fetch existing cart items for the user
+      const cartSnapshot = await getDocs(cartRef);
+      const existingCartItem = cartSnapshot.docs.find(doc => doc.data().id === item.id);
+  
+      if (existingCartItem) {
+        // If the item already exists in the cart, update its quantity
+        await updateDoc(existingCartItem.ref, {
+          quantity: existingCartItem.data().quantity + 1
+        });
+      } else {
+        // If the item is not in the cart, add it with a quantity of 1
+        await addDoc(cartRef, { ...item, quantity: 1 });
+      }
+  
+      Alert.alert("Added to Cart", `${item.name} added to your cart.`);
     } catch (error) {
       console.error("Error adding item to cart: ", error);
       Alert.alert("Error", "Failed to add item to cart.");
     }
   };
+  
 
   const filteredBooks = books.filter(
     (book) =>
       book.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.genre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.price.toString().includes(searchQuery) // Convert price to string for comparison
+      book.price.toString().includes(searchQuery) 
   );
 
   const sortedBooks = sortBy
     ? filteredBooks.sort((a, b) => {
         if (sortBy === "price") {
-          return a[sortBy] - b[sortBy]; // Compare prices directly as numbers
+          return a[sortBy] - b[sortBy]; 
         } else if (a[sortBy] && b[sortBy]) {
           return a[sortBy].toString().localeCompare(b[sortBy].toString());
         } else {
