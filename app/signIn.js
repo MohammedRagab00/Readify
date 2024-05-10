@@ -39,7 +39,8 @@ export default function SignIn() {
         errorMessage = "User not found. Please check your email and try again.";
       } else if (error.code === "auth/wrong-password") {
         errorMessage = "Incorrect password. Please try again.";
-      }
+      }else if (error.code === "auth/invalid-login-credentials") {
+        errorMessage = "Incorrect Credentials. Please check again.";}
   
       console.error("Error logging in:", error.message);
       Alert.alert("Sign In", errorMessage);

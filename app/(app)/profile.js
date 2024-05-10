@@ -1,17 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import CustomProfileHeader from '../../components/CustomProfileHeader';
 import { useRouter } from 'expo-router';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { auth } from '../../firebaseConfig';
 
-const ProfilePage = ({ userName, email }) => {
+const ProfilePage = () => {
   const [photo, setPhoto] = useState(null);
-  const router = useRouter();
+  const [uEmail, setUEmail] = useState('');
+const [userName, setUserName] = useState('');
 
+  const router = useRouter();
+  const user = auth.currentUser;
   useEffect(() => {
+    fetchData();
     fetchPhoto();
   }, []);
+
+  
+  const fetchData = async () => {
+    try {
+      const userId = user.uid;
+      const userDocRef = doc(db, 'users', userId);
+      const docSnapshot = await getDoc(userDocRef);
+  
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        const userEmail = userData.email;
+        const userName = userData.name;
+        setUEmail(userEmail);
+        setUserName(userName);
+      } else {
+        console.log('No such document!');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  
+  
 
   const fetchPhoto = async () => {
     try {
@@ -52,6 +85,9 @@ const ProfilePage = ({ userName, email }) => {
 
   return (
     <View style={styles.container}>
+      
+      <Text style={styles.userName}>Name: {userName}</Text>
+      <Text style={styles.userEmail}>Email: {uEmail}</Text>
       <CustomProfileHeader router={router}/>
       <TouchableOpacity onPress={handleUploadPhoto}>
         <View style={styles.photoContainer}>
@@ -62,8 +98,6 @@ const ProfilePage = ({ userName, email }) => {
           )}
         </View>
       </TouchableOpacity>
-      <Text style={styles.userName}>Name : {userName} </Text>
-      <Text style={styles.userEmail}>Email : {email}</Text>
     </View>
   );
 };

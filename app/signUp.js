@@ -47,7 +47,10 @@ export default function SignUp() {
                 Alert.alert('Sign Up', 'The email address is already in use. Please use a different email address.');
             } else if (error.code === 'auth/weak-password') {
                 Alert.alert('Sign Up', 'The password is too weak. Please use a stronger password.');
-            } else {
+            } else if (error.code === 'auth/network-request-failed') {
+                Alert.alert('Sign Up', 'Bad Connection. Please check your connection.');
+            } 
+            else {
                 Alert.alert('Sign Up', 'An error occurred during registration. Please try again later.');
             }
         }
