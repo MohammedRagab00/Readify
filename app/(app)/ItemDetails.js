@@ -28,10 +28,10 @@ export default function ItemDetails() {
   const [publisher, setPublisher] = useState("");
   const [genre, setGenre] = useState("");
   const [rate, setRate] = useState(4.56);
-  const [items, setItems] = useState([]); // Initialize items as an empty array
+  const [items, setItems] = useState([]); 
 
   useEffect(() => {
-    if (!item) return; // Exit early if item is undefined
+    if (!item) return; 
 
     const getDetails = async () => {
       try {
@@ -56,7 +56,7 @@ export default function ItemDetails() {
     };
 
     getDetails();
-  }, [item]); // Make sure to re-fetch when item changes
+  }, [item]); 
 
   const handleAddToCart = async (book) => {
     try {

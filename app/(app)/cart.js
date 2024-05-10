@@ -20,7 +20,7 @@ export default function Cart() {
   }, [user]);
 
   useEffect(() => {
-    // Recalculate total price whenever items change
+    // Recalculate total price whenever items change 
     calculateTotalPrice();
   }, [items]);
 
