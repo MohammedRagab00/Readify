@@ -1,6 +1,5 @@
-import { collection, getDoc, addDoc, doc } from 'firebase/firestore';
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, TextInput, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import CustomProfileHeader from '../../components/CustomProfileHeader';
@@ -10,7 +9,8 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { auth } from '../../firebaseConfig';
-
+import { collection, getDoc, addDoc, doc } from 'firebase/firestore';
+import { MaterialIcons } from '@expo/vector-icons';
 const ProfilePage = () => {
   const [photo, setPhoto] = useState(null);
   const [uEmail, setUEmail] = useState('');
@@ -20,6 +20,7 @@ const ProfilePage = () => {
   const [author, setAuthor] = useState('');
   const [publisher, setPublisher] = useState('');
   const [genre, setGenre] = useState('');
+  const [modalVisible, setModalVisible] = useState(false); // State to track modal visibility
 
   const router = useRouter();
   const user = auth.currentUser;
@@ -104,6 +105,7 @@ const ProfilePage = () => {
       setPublisher('');
       setGenre('');
       setPhoto(null);
+      setModalVisible(false); // Close the modal after adding the book
       Alert.alert('Success', 'Book added successfully!');
     } catch (error) {
       console.error('Error adding book:', error);
@@ -117,64 +119,89 @@ const ProfilePage = () => {
       <Text style={styles.userName}>Name: {userName}</Text>
       <Text style={styles.userEmail}>Email: {uEmail}</Text>
       <View>
-
-      <TouchableOpacity onPress={handleUploadPhoto}>
-        <View style={styles.photoContainer}>
-          {photo ? (
-            <Image source={{ uri: photo }} style={styles.photo} />
-          ) : (
-            <Text style={styles.uploadText}>Upload Photo</Text>
-          )}
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleUploadPhoto}>
+          <View style={styles.photoContainer}>
+            {photo ? (
+              <Image source={{ uri: photo }} style={styles.photo} />
+            ) : (
+              <Text style={styles.uploadText}>Upload Photo</Text>
+            )}
           </View>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setBookName}
-        placeholder="Book Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={price}
-        onChangeText={setPrice}
-        placeholder="Price"
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        value={author}
-        onChangeText={setAuthor}
-        placeholder="Author"
-      />
-      <TextInput
-        style={styles.input}
-        value={publisher}
-        onChangeText={setPublisher}
-        placeholder="Publisher"
-      />
-      <TextInput
-        style={styles.input}
-        value={genre}
-        onChangeText={setGenre}
-        placeholder="Genre"
-      />
-      <TextInput
-        style={styles.input}
-        value={photo}
-        onChangeText={setPhoto}
-        placeholder="PhotoURL"
-      />
-      <TouchableOpacity style={styles.addButton} onPress={handleAddBook}>
-        <Text style={styles.addButtonText}>Add Book</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
+      <View>
+         <Text>Want to sell a book please add information</Text>     
+        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
+          <Text style={styles.addButtonText}>Add Book</Text>
+        </TouchableOpacity>
+
+      </View>
+      {/* Modal for adding a book */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setBookName}
+              placeholder="Book Name"
+            />
+            <TextInput
+              style={styles.input}
+              value={price}
+              onChangeText={setPrice}
+              placeholder="Price"
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.input}
+              value={author}
+              onChangeText={setAuthor}
+              placeholder="Author"
+            />
+            <TextInput
+              style={styles.input}
+              value={publisher}
+              onChangeText={setPublisher}
+              placeholder="Publisher"
+            />
+            <TextInput
+              style={styles.input}
+              value={genre}
+              onChangeText={setGenre}
+              placeholder="Genre"
+            />
+            <TextInput
+              style={styles.input}
+              value={photo}
+              onChangeText={setPhoto}
+              placeholder="PhotoURL"
+            />
+            <View style={{ flexDirection: 'row', }}>
+            <TouchableOpacity style={styles.addButton} onPress={handleAddBook}>
+              <Text style={styles.addButtonText}>Add Book</Text>
+            </TouchableOpacity>
+  <TouchableOpacity onPress={() => setModalVisible(false)} style={{justifyContent:"center"}}>
+  <MaterialIcons name="cancel" size={24} color="black" />
+  </TouchableOpacity>
+</View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop:90,
+    paddingTop: 90,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
@@ -210,7 +237,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   input: {
-    width: '80%',
+    width: '100%',
     padding: 10,
     marginBottom: 10,
     borderWidth: 1,
@@ -218,6 +245,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   addButton: {
+    width: '95%',
+
     backgroundColor: '#ca6128',
     padding: 10,
     borderRadius: 5,
@@ -225,6 +254,20 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    width: '100%',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
 
