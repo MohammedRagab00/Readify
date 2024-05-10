@@ -67,19 +67,17 @@ const ProfilePage = () => {
       console.error('Error saving photo:', error.message);
     }
   };
-
   const handleUploadPhoto = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
-
+  
       if (!result.cancelled) {
-        setPhoto(result.uri);
-        savePhoto(result.uri);
+        setPhoto(result); // Store the entire result object in the state
+        savePhoto(result.uri); // Save only the URI
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to upload photo.');
@@ -119,15 +117,15 @@ const ProfilePage = () => {
       <Text style={styles.userName}>Name: {userName}</Text>
       <Text style={styles.userEmail}>Email: {uEmail}</Text>
       <View>
-        <TouchableOpacity onPress={handleUploadPhoto}>
+       
           <View style={styles.photoContainer}>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.photo} />
             ) : (
-              <Text style={styles.uploadText}>Upload Photo</Text>
+              <Text style={styles.uploadText}>photo you choose will appear here</Text>
             )}
           </View>
-        </TouchableOpacity>
+        
       </View>
       <View>
          <Text>Want to sell a book please add information</Text>     
@@ -208,8 +206,8 @@ const styles = StyleSheet.create({
     marginBottom: '100%',
   },
   photoContainer: {
-    width: 70,
-    height: 70,
+    width: 90,
+    height: 90,
     borderRadius: 75,
     backgroundColor: 'white',
     justifyContent: 'center',
