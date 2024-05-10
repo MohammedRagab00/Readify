@@ -203,12 +203,6 @@ export default function TabOneScreen() {
                   </Text>
                   <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
                   <Text style={styles.bookDetails}>Price: {item.price}</Text>
-                  <Pressable
-                    onPress={() => addToCart(item)}
-                    style={styles.addToCartButton}
-                  >
-                    <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-                  </Pressable>
                 </View>
               </View>
             </Pressable>
