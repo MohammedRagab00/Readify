@@ -53,7 +53,7 @@ export default function SignIn() {
       const auth = getAuth();
       const user = auth.currentUser;
       const userId = user.uid;
-      if (userId === "EhdaXO8JiMM5cRdmFOdopspIuQf2") {
+      if (userId === "EhdaXO8JiMM5cRdmFOdopspIuQf2" ||userId === "Ewc0uJR0AkY85t4zh6JALWuo9ez1"  ) {
         router.replace("/Admin");
       } else {
         router.replace("home");
