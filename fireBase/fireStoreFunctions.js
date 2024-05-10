@@ -1,16 +1,23 @@
 import { db } from "./Config";
+import { auth } from "./Config";
 import {
   getDocs,
   doc,
   setDoc,
   addDoc,
   deleteDoc,
+  updateDoc,
   collection,
   query,
   where,
   onSnapshot,
 } from "firebase/firestore";
-// Get a list of books from your database
+import {
+  
+  Alert,
+ 
+} from "react-native";
+
 async function getbooks() {
   const books = collection(db, "books");
   const booksnapshot = await getDocs(books);
@@ -34,6 +41,95 @@ async function deletebook(id) {
   }
 }
 
+
+function createUserProfile(user) {
+  const userProfileRef = doc(db, "users", user.uid);
+  
+  setDoc(userProfileRef, {
+    name: "Default Name", 
+    email: user.email
+  }, { merge: true })
+  .then(() => {
+    console.log("User profile created/updated in Firestore.");
+  })
+  .catch((error) => {
+    console.error("Error adding/updating user profile in Firestore:", error);
+  });
+}
+
+ const addToCart = async (item) => {
+  try {
+    const user = auth.currentUser; // Get the current user
+    if (!user) {
+      // If user is not authenticated, prompt the user to sign in
+      Alert.alert("Sign In Required", "Please sign in to add items to your cart.");
+      return;
+    }
+    
+    const userId = user.uid; 
+    const cartRef = collection(db, `users/${userId}/cart`);
+    
+    const cartSnapshot = await getDocs(cartRef);
+    const existingCartItem = cartSnapshot.docs.find(doc => doc.data().id === item.id);
+
+    if (existingCartItem) {
+      await updateDoc(existingCartItem.ref, {
+        quantity: existingCartItem.data().quantity + 1
+      });
+    } else {
+      await addDoc(cartRef, { ...item, quantity: 1 });
+    }
+
+    Alert.alert("Added to Cart", `${item.name} added to your cart.`);
+  } catch (error) {
+    console.error("Error adding item to cart: ", error);
+    Alert.alert("Error", "Failed to add item to cart.");
+  }
+};
+
+
+const getUserId = () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userId = user.uid;
+    return userId;
+  } else {
+    
+    return null;
+  }
+};
+
+function getCart(userId) {
+  const cartRef = collection(db, `users/${userId}/cart`);
+  
+  getDocs(cartRef)
+    .then((querySnapshot) => {
+      const cartItems = [];
+      querySnapshot.forEach((doc) => {
+        cartItems.push(doc.data());
+      });
+      console.log(cartItems);
+      // Process/display cart items in your app
+    })
+    .catch((error) => {
+      console.error("Error fetching cart items:", error);
+    });
+}
+
+async function removeFromCart(userId, bookId) {
+  try {
+    const cartRef = doc(db, `users/${userId}/cart`, bookId);
+    await deleteDoc(cartRef);
+    console.log("Item removed from cart successfully");
+  } catch (error) {
+    console.error("Error removing item from cart:", error);
+    throw error;
+  }
+}
+
+
+
+
 async function addbook(book) {
   try {
     const docRef = await addDoc(collection(db, "books"), book);
@@ -42,6 +138,10 @@ async function addbook(book) {
     console.error("Error adding document: ", e);
   }
 }
+
+
+
+
 
 function subscribe(callback) {
   const unsubscribe = onSnapshot(
@@ -58,4 +158,4 @@ function subscribe(callback) {
   return unsubscribe;
 }
 
-export { getbooks, addbook, editbook, deletebook, subscribe };
+export { getbooks, addbook, editbook, deletebook, subscribe , removeFromCart ,addToCart,getUserId };

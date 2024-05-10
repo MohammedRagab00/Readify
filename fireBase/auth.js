@@ -1,4 +1,4 @@
-import { auth } from "./Config";
+import { auth , db } from "./Config";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -10,20 +10,43 @@ import {
   sendEmailVerification,
   signOut
 } from "firebase/auth";
+import {
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  collection,
+
+} from "firebase/firestore";
 
 // Listen for authentication state to change.
 onAuthStateChanged(auth, (user) => {
   if (user != null) {
     console.log("We are authenticated now!");
   }
-  // Do other things
 });
 
-async function register(email, password) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
-  return cred;
-}
+async function register(email, password, name) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Create a user document in Firestore
+    const userDocRef = doc(db, 'users', cred.user.uid);
 
+    await setDoc(userDocRef, {
+      email: email,
+      name: name,
+      cart: [] 
+    });
+
+    console.log('User registered successfully:', cred.user.uid);
+    return cred; 
+  } catch (error) {
+    console.error('Error registering user:', error);
+    throw error; 
+  }
+}
 async function login(email, password) {
   await signInWithEmailAndPassword(auth, email, password);
 }

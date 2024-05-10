@@ -35,7 +35,7 @@ export default function CustomItemHeader({ router }) {
               elevation: 8,
             }}>
 
-              <TouchableOpacity onPress={()=>router.back()}>
+<TouchableOpacity onPress={()=>router.back()}>
                 <FontAwesome name="chevron-left" size={20} color="white" />
               </TouchableOpacity>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>

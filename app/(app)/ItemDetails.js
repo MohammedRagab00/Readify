@@ -58,15 +58,11 @@ export default function ItemDetails() {
 
   const handleAddToCart = async (book) => {
     try {
-      const userId = await getUserId(); // Get the user ID of the signed-in user
 
-      await addToCart(userId, book);
+      await addToCart(book);
 
-      // Optional: Update the UI or perform any other actions after adding to cart
     } catch (error) {
-      console.error("Error adding item to cart:", error.message);
-      // Optionally, handle the error and show an error message to the user
-    }
+      console.error("Error adding item to cart:", error.message);    }
   };
 
   if (loading) {
