@@ -1,6 +1,6 @@
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDoc, addDoc, doc } from 'firebase/firestore';
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import CustomProfileHeader from '../../components/CustomProfileHeader';
@@ -14,7 +14,12 @@ import { auth } from '../../firebaseConfig';
 const ProfilePage = () => {
   const [photo, setPhoto] = useState(null);
   const [uEmail, setUEmail] = useState('');
-const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [name, setBookName] = useState('');
+  const [price, setPrice] = useState('');
+  const [author, setAuthor] = useState('');
+  const [publisher, setPublisher] = useState('');
+  const [genre, setGenre] = useState('');
 
   const router = useRouter();
   const user = auth.currentUser;
@@ -23,13 +28,12 @@ const [userName, setUserName] = useState('');
     fetchPhoto();
   }, []);
 
-  
   const fetchData = async () => {
     try {
       const userId = user.uid;
       const userDocRef = doc(db, 'users', userId);
       const docSnapshot = await getDoc(userDocRef);
-  
+
       if (docSnapshot.exists()) {
         const userData = docSnapshot.data();
         const userEmail = userData.email;
@@ -43,8 +47,6 @@ const [userName, setUserName] = useState('');
       console.error('Error fetching data:', error);
     }
   };
-  
-  
 
   const fetchPhoto = async () => {
     try {
@@ -83,12 +85,39 @@ const [userName, setUserName] = useState('');
     }
   };
 
+  const handleAddBook = async () => {
+    try {
+      const userId = user.uid;
+      await addDoc(collection(db, 'Books'), {
+        userId,
+        name,
+        price,
+        author,
+        publisher,
+        genre,
+        imageUrl: photo,
+      });
+      // Clear input fields after adding the book
+      setBookName('');
+      setPrice('');
+      setAuthor('');
+      setPublisher('');
+      setGenre('');
+      setPhoto(null);
+      Alert.alert('Success', 'Book added successfully!');
+    } catch (error) {
+      console.error('Error adding book:', error);
+      Alert.alert('Error', 'Failed to add book.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      
+      <CustomProfileHeader router={router}/>
       <Text style={styles.userName}>Name: {userName}</Text>
       <Text style={styles.userEmail}>Email: {uEmail}</Text>
-      <CustomProfileHeader router={router}/>
+      <View>
+
       <TouchableOpacity onPress={handleUploadPhoto}>
         <View style={styles.photoContainer}>
           {photo ? (
@@ -98,21 +127,62 @@ const [userName, setUserName] = useState('');
           )}
         </View>
       </TouchableOpacity>
+          </View>
+      <TextInput
+        style={styles.input}
+        value={name}
+        onChangeText={setBookName}
+        placeholder="Book Name"
+      />
+      <TextInput
+        style={styles.input}
+        value={price}
+        onChangeText={setPrice}
+        placeholder="Price"
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        value={author}
+        onChangeText={setAuthor}
+        placeholder="Author"
+      />
+      <TextInput
+        style={styles.input}
+        value={publisher}
+        onChangeText={setPublisher}
+        placeholder="Publisher"
+      />
+      <TextInput
+        style={styles.input}
+        value={genre}
+        onChangeText={setGenre}
+        placeholder="Genre"
+      />
+      <TextInput
+        style={styles.input}
+        value={photo}
+        onChangeText={setPhoto}
+        placeholder="PhotoURL"
+      />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddBook}>
+        <Text style={styles.addButtonText}>Add Book</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    paddingTop:90,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
-    marginBottom: '100%'
+    marginBottom: '100%',
   },
   photoContainer: {
-    width: 150,
-    height: 150,
+    width: 70,
+    height: 70,
     borderRadius: 75,
     backgroundColor: 'white',
     justifyContent: 'center',
@@ -138,6 +208,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'black',
+  },
+  input: {
+    width: '80%',
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+  },
+  addButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

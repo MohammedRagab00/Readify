@@ -87,13 +87,20 @@ export default function TabOneScreen() {
   };
   
 
-  const filteredBooks = books.filter(
-    (book) =>
-      book.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.genre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.price.toString().includes(searchQuery) 
-  );
+  const filteredBooks = books.filter((book) => {
+    const name = book.name ? book.name.toLowerCase() : '';
+    const publisher = book.publisher ? book.publisher.toLowerCase() : '';
+    const genre = book.genre ? book.genre.toLowerCase() : '';
+    const price = book.price ? book.price.toString() : '';
+  
+    return (
+      name.includes(searchQuery.toLowerCase()) ||
+      publisher.includes(searchQuery.toLowerCase()) ||
+      genre.includes(searchQuery.toLowerCase()) ||
+      price.includes(searchQuery)
+    );
+  });
+  
 
   const sortedBooks = sortBy
     ? filteredBooks.sort((a, b) => {
