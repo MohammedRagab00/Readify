@@ -10,7 +10,7 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-// import { db } from "../../fireBase/Config";
+import { db } from "../../firebaseConfig";
 import { router } from "expo-router";
 import {
   addDoc,
@@ -32,10 +32,10 @@ export default function Admin() {
   const [publisher, setPublisher] = useState("");
   const [genre, setGenre] = useState("");
   //   const [rate, setRate] = useState(4.56);
+const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [products, setProducts] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchData = async () => {
     const usersRef = collection(db, "Books");
@@ -51,6 +51,18 @@ export default function Admin() {
   useEffect(() => {
     fetchData();
   }, []);
+
+
+  
+const handleDeleteProduct = async (bookId) => {
+    try {
+      await deleteDoc(doc(db, "Books", bookId));
+      Alert.alert("Book deleted successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting book: ", error);
+    }
+  };
 
   const handleAddProduct = async () => {
     if (name.trim() === "" || price.trim() === "" || imageUrl.trim() === "") {
@@ -82,31 +94,13 @@ export default function Admin() {
     }
   };
 
-  const handleDeleteProduct = async (bookId) => {
-    try {
-      await deleteDoc(doc(db, "Books", bookId));
-      Alert.alert("Book deleted successfully");
-      fetchData();
-    } catch (error) {
-      console.error("Error deleting book: ", error);
-    }
-  };
-
   const handleUpdateProduct = async () => {
-    if (
-      !selectedProduct ||
-      name.trim() === "" ||
-      price.trim() === "" ||
-      imageUrl.trim() === "" ||
-      author.trim() === "" ||
-      genre.trim() === "" ||
-      publisher.trim() === ""
-    ) {
+    if (name.trim() === "" || price.trim() === "" || imageUrl.trim() === "") {
       //continue
-      Alert.alert("Please select a product and enter details");
+      Alert.alert("Please enter book details");
       return;
     }
-
+  
     try {
       const bookId = selectedProduct.id;
       await updateDoc(doc(db, "Books", bookId), {
@@ -128,9 +122,10 @@ export default function Admin() {
       fetchData();
     } catch (error) {
       console.error("Error updating product: ", error);
+      Alert.alert("Error", "Failed to update product");
     }
   };
-
+  
   const handleSignOut = async () => {
     try {
       router.replace("/signIn");
@@ -251,35 +246,33 @@ export default function Admin() {
       </Modal>
 
       <FlatList
-        data={products}
-        renderItem={({ item }) => (
-          <View style={styles.bookItem}>
-            <Image source={{ uri: item.imageUrl }} style={styles.bookImage} />
-            <View style={styles.bookInfoContainer}>
-              <Text style={styles.bookTitle}>{item.name}</Text>
-              <Text style={styles.bookDetails}>Author: {item.author}</Text>
-              <Text style={styles.bookDetails}>
-                Publisher: {item.publisher}
-              </Text>
-              <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
-              <Text style={styles.bookDetails}>Price: {item.price}</Text>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={handleDeleteProduct}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={handleUpdateProduct}
-              >
-                <Text style={styles.buttonText}>Edit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
+  data={products}
+  renderItem={({ item }) => (
+    <View style={styles.bookItem}>
+      <Image source={{ uri: item.imageUrl }} style={styles.bookImage} />
+      <View style={styles.bookInfoContainer}>
+        <Text style={styles.bookTitle}>{item.name}</Text>
+        <Text style={styles.bookDetails}>Author: {item.author}</Text>
+        <Text style={styles.bookDetails}>Publisher: {item.publisher}</Text>
+        <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
+        <Text style={styles.bookDetails}>Price: {item.price}</Text>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteProduct(item.id)} // Pass item.id to handleDeleteProduct
+        >
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => openEditModal(item)} // Pass item to openEditModal
+        >
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  )}
+  keyExtractor={(item) => item.id}
+/>
     </View>
   );
 }
