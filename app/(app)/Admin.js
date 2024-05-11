@@ -11,7 +11,6 @@ import {
   Modal,
 } from "react-native";
 import { db } from "../../firebaseConfig";
-import { router } from "expo-router";
 import {
   addDoc,
   collection,
@@ -20,7 +19,6 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Admin() {
   const [name, setName] = useState("");
@@ -31,8 +29,7 @@ export default function Admin() {
   //   const [error, setError] = useState(null);
   const [publisher, setPublisher] = useState("");
   const [genre, setGenre] = useState("");
-  //   const [rate, setRate] = useState(4.56);
-const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [products, setProducts] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,9 +49,7 @@ const [selectedProduct, setSelectedProduct] = useState(null);
     fetchData();
   }, []);
 
-
-  
-const handleDeleteProduct = async (bookId) => {
+  const handleDeleteProduct = async (bookId) => {
     try {
       await deleteDoc(doc(db, "Books", bookId));
       Alert.alert("Book deleted successfully");
@@ -65,8 +60,14 @@ const handleDeleteProduct = async (bookId) => {
   };
 
   const handleAddProduct = async () => {
-    if (name.trim() === "" || price.trim() === "" || imageUrl.trim() === "") {
-      //continue
+    if (
+      name.trim() === "" ||
+      price.trim() === "" ||
+      imageUrl.trim() === "" ||
+      publisher.trim() === "" ||
+      author.trim() === "" ||
+      genre.trim() === ""
+    ) {
       Alert.alert("Please enter book details");
       return;
     }
@@ -80,7 +81,7 @@ const handleDeleteProduct = async (bookId) => {
         publisher: publisher,
         genre: genre,
       });
-      Alert.alert("Product added successfully");
+      Alert.alert("Book added successfully");
       setName("");
       setPrice("");
       setImageUrl("");
@@ -95,12 +96,18 @@ const handleDeleteProduct = async (bookId) => {
   };
 
   const handleUpdateProduct = async () => {
-    if (name.trim() === "" || price.trim() === "" || imageUrl.trim() === "") {
-      //continue
+    if (
+      name.trim() === "" ||
+      price.trim() === "" ||
+      imageUrl.trim() === "" ||
+      publisher.trim() === "" ||
+      author.trim() === "" ||
+      genre.trim() === ""
+    ) {
       Alert.alert("Please enter book details");
       return;
     }
-  
+
     try {
       const bookId = selectedProduct.id;
       await updateDoc(doc(db, "Books", bookId), {
@@ -111,7 +118,7 @@ const handleDeleteProduct = async (bookId) => {
         publisher: publisher,
         genre: genre,
       });
-      Alert.alert("Product updated successfully");
+      Alert.alert("Book updated successfully");
       setName("");
       setPrice("");
       setImageUrl("");
@@ -121,16 +128,8 @@ const handleDeleteProduct = async (bookId) => {
       setModalVisible(false);
       fetchData();
     } catch (error) {
-      console.error("Error updating product: ", error);
-      Alert.alert("Error", "Failed to update product");
-    }
-  };
-  
-  const handleSignOut = async () => {
-    try {
-      router.replace("/signIn");
-    } catch (error) {
-      console.error("Error signing out: ", error);
+      console.error("Error updating book: ", error);
+      Alert.alert("Error", "Failed to update book");
     }
   };
 
@@ -146,10 +145,9 @@ const handleDeleteProduct = async (bookId) => {
   };
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <MaterialCommunityIcons name="logout" size={24} color="white" />
-        </TouchableOpacity>
+      <View
+        style={{ alignSelf: "flex-start", justifyContent: "space-between" }}
+      >
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
@@ -239,40 +237,44 @@ const handleDeleteProduct = async (bookId) => {
                 setModalVisible(false);
               }}
             >
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={[styles.buttonText, { color: "#000" }]}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
       <FlatList
-  data={products}
-  renderItem={({ item }) => (
-    <View style={styles.bookItem}>
-      <Image source={{ uri: item.imageUrl }} style={styles.bookImage} />
-      <View style={styles.bookInfoContainer}>
-        <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.bookDetails}>Author: {item.author}</Text>
-        <Text style={styles.bookDetails}>Publisher: {item.publisher}</Text>
-        <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
-        <Text style={styles.bookDetails}>Price: {item.price}</Text>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDeleteProduct(item.id)} // Pass item.id to handleDeleteProduct
-        >
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => openEditModal(item)} // Pass item to openEditModal
-        >
-          <Text style={styles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  )}
-  keyExtractor={(item) => item.id}
-/>
+        data={products}
+        renderItem={({ item }) => (
+          <View style={styles.bookItem}>
+            <Image source={{ uri: item.imageUrl }} style={styles.bookImage} />
+            <View style={styles.bookInfoContainer}>
+              <Text style={styles.bookTitle}>{item.name}</Text>
+              <Text style={styles.bookDetails}>Author: {item.author}</Text>
+              <Text style={styles.bookDetails}>
+                Publisher: {item.publisher}
+              </Text>
+              <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
+              <Text style={styles.bookDetails}>Price: {item.price}</Text>
+              <View style={{ alignSelf: "flex-end", marginHorizontal: 10 }}>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteProduct(item.id)} // Pass item.id to handleDeleteProduct
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() => openEditModal(item)} // Pass item to openEditModal
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 }
@@ -282,19 +284,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
-  searchInput: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-  },
-  sortContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
-  },
+
   bookItem: {
     marginBottom: 10,
     borderWidth: 1,
@@ -327,24 +317,7 @@ const styles = StyleSheet.create({
   bookDetails: {
     marginBottom: 10,
   },
-  addToCartButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: "#ca6128",
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  addToCartButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#333",
-  },
+
   input: {
     height: 40,
     borderColor: "#CCCCCC",
@@ -356,7 +329,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addButton: {
-    backgroundColor: "#FF4500",
+    backgroundColor: "#874f1f",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 18,
@@ -369,7 +342,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2.62,
   },
   editButton: {
-    backgroundColor: "#008000",
+    backgroundColor: "#000",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 18,
@@ -382,7 +355,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2.62,
   },
   deleteButton: {
-    backgroundColor: "#FF6347",
+    backgroundColor: "#874f1f",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 18,
@@ -407,7 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#717171",
     padding: 20,
     borderRadius: 8,
     elevation: 5,
@@ -417,11 +390,11 @@ const styles = StyleSheet.create({
   },
 
   modalTitle: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: "#333",
+    color: "#000",
   },
   cancelButton: {
     backgroundColor: "#DDDDDD",
@@ -429,32 +402,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 18,
     marginBottom: 10,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-  },
-  productItem: {
-    padding: 10,
-    marginBottom: 10,
-  },
-  productList: {
-    width: "100%",
-  },
-  productItemOdd: {
-    backgroundColor: "#E0E0E0",
-  },
-  productItemEven: {
-    backgroundColor: "#D3D3D3",
-  },
-  signOutButton: {
-    backgroundColor: "#FF4500",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 18,
-    marginTop: 20,
     alignSelf: "center",
     elevation: 2,
     shadowColor: "#000",
