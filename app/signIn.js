@@ -77,7 +77,7 @@ export default function SignIn() {
   return (
     <CustomKeyBoardView>
       <StatusBar style="dark" />
-      <View style={{ paddingTop: 64, paddingHorizontal: 20, flex: 1 }}>
+      <View style={{ paddingTop: 64, paddingHorizontal: 20, flex: 1,marginTop:20 }}>
         <Pressable onPress={() => router.push("home2")} style={styles.homeButton}>
           <Text style={{ color: "white", fontWeight: "bold" }}>continue with out sign</Text>
         </Pressable>

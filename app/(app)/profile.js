@@ -93,40 +93,30 @@ const ProfilePage = () => {
     }
   };
 
-
   const handleAddBook = async () => {
-    if (
-      name.trim() === "" ||
-      price.trim() === "" ||
-      imageUrl.trim() === "" ||
-      publisher.trim() === "" ||
-      author.trim() === "" ||
-      genre.trim() === ""
-    ) {
-      Alert.alert("Please enter book details");
-      return;
-    }
-
     try {
+      const userId = user.uid;
       await addDoc(collection(db, "Books"), {
-        name: name,
-        price: parseFloat(price),
-        imageUrl: imageUrl,
-        author: author,
-        publisher: publisher,
-        genre: genre,
+        userId,
+        name,
+        price,
+        author,
+        publisher,
+        genre,
+        imageUrl: photo,
       });
-      Alert.alert("Book added successfully");
-      setName("");
+      // Clear input fields after adding the book
+      setBookName("");
       setPrice("");
-      setImageUrl("");
       setAuthor("");
       setPublisher("");
       setGenre("");
-      setModalVisible(false);
-      fetchData();
+      setPhoto(null);
+      setModalVisible(false); // Close the modal after adding the book
+      Alert.alert("Success", "Book added successfully!");
     } catch (error) {
-      console.error("Error adding product: ", error);
+      console.error("Error adding book:", error);
+      Alert.alert("Error", "Failed to add book.");
     }
   };
 
