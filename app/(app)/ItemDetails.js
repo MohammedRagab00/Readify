@@ -7,14 +7,13 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  FlatList,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import CustomItemHeader from "../../components/CustomItemHeader";
 import { addToCart } from "../../fireBase/fireStoreFunctions";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 
 export default function ItemDetails() {
   const { item } = useLocalSearchParams();
@@ -29,7 +28,7 @@ export default function ItemDetails() {
     imageUrl: "",
     publisher: "",
     genre: "",
-    rate: 0,
+    // rate: 0,
   });
 
   useEffect(() => {
@@ -81,18 +80,20 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomItemHeader router={router}/>
+      <CustomItemHeader router={router} />
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: book.imageUrl }} />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={[styles.text, { fontSize: 27 }]}>Book's Name: {book.name}</Text>
+        <Text style={[styles.text, { fontSize: 27 }]}>
+          Book's Name: {book.name}
+        </Text>
         <Text style={[styles.text, { fontWeight: "bold" }]}>
           Written by {book.author}
         </Text>
-        <Text style={[styles.text, { fontWeight: "bold" }]}>
+        {/* <Text style={[styles.text, { fontWeight: "bold" }]}>
           Rate: {book.rate} out of 5 stars
-        </Text>
+        </Text> */}
         <Text style={[styles.text, { fontWeight: "bold" }]}>
           Published by {book.publisher}
         </Text>
@@ -145,12 +146,13 @@ const styles = StyleSheet.create({
   detailsContainer: {
     paddingHorizontal: 10,
     paddingVertical: 20,
+    margin: 7,
   },
   buttonContainer: {
     alignItems: "center",
   },
   text: {
-    fontSize: 17,
+    fontSize: 19,
     fontWeight: "500",
     marginBottom: 5,
   },
