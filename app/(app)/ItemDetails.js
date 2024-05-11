@@ -129,27 +129,25 @@ export default function ItemDetails() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 6,
-    paddingTop: 10,
   },
   imageContainer: {
-    height: "63%",
+    flex: 1,
     borderColor: "#874f1f",
     borderWidth: 8,
   },
   image: {
     flex: 1,
-    width: null,
-    height: null,
     resizeMode: "cover",
   },
   detailsContainer: {
+    flex: 0.5,
     paddingHorizontal: 10,
     paddingVertical: 20,
     margin: 7,
   },
   buttonContainer: {
     alignItems: "center",
+    marginBottom: 20,
   },
   text: {
     fontSize: 19,
