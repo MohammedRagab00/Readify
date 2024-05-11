@@ -124,7 +124,7 @@ const ProfilePage = () => {
     <View style={styles.container}>
       <CustomProfileHeader router={router} />
       <View style={{flexDirection:'row'}}>
-        <View style={{paddingTop:30, marginRight:15}}>
+        <View style={{paddingTop:30, marginRight:35}}>
             <Text style={styles.uploadText}>Uploaded Photo will </Text>
             <Text style={styles.uploadText}> appear here</Text>
         </View>
@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
     borderWidth: 4,
   },
   photo: {
-    width: 150,
-    height: 150,
+    width: 130,
+    height: 130,
     borderRadius: 75,
   },
   uploadText: {

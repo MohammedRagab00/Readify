@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   detailsContainer: {
-    flex: 0.4,
     paddingHorizontal: 10,
     paddingVertical: 20,
     margin: 7,
