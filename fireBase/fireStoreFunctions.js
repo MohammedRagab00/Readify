@@ -57,7 +57,7 @@ function createUserProfile(user) {
   });
 }
 
- const addToCart = async (item) => {
+const addToCart = async (item) => {
   try {
     const user = auth.currentUser; // Get the current user
     if (!user) {
@@ -70,7 +70,11 @@ function createUserProfile(user) {
     const cartRef = collection(db, `users/${userId}/cart`);
     
     const cartSnapshot = await getDocs(cartRef);
-    const existingCartItem = cartSnapshot.docs.find(doc => doc.data().id === item.id);
+
+    // Check for existing item in the cart based on item properties
+    const existingCartItem = cartSnapshot.docs.find(doc => 
+      doc.data().id === item.id && doc.data().name === item.name 
+    );
 
     if (existingCartItem) {
       await updateDoc(existingCartItem.ref, {
