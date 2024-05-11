@@ -123,21 +123,21 @@ const ProfilePage = () => {
   return (
     <View style={styles.container}>
       <CustomProfileHeader router={router} />
-      <View>
-        <TouchableOpacity onPress={handleUploadPhoto}>
+      <View style={{flexDirection:'row'}}>
+        <View style={{paddingTop:30, marginRight:15}}>
+            <Text style={styles.uploadText}>Uploaded Photo will </Text>
+            <Text style={styles.uploadText}> appear here</Text>
+        </View>
           <View style={styles.photoContainer}>
             {photo ? (
               <Image source={{ uri: photo }} style={styles.photo} />
             ) : (
-              <Text style={styles.uploadText}>Upload Photo</Text>
+              <Text style={styles.uploadText}>here</Text>
             )}
           </View>
-        </TouchableOpacity>
       </View>
-      <View style={{ borderColor: "#874f1f", borderWidth: 4, padding: 7 }}>
         <Text style={styles.text}>Name: {userName}</Text>
         <Text style={styles.text}>Email: {uEmail}</Text>
-      </View>
 
       <View style={{ alignItems: "center", padding: 10, margin: 10 }}>
         <Text style={{ fontSize: 17, fontWeight: "400" }}>
@@ -262,11 +262,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   addButton: {
-    // width: "95%",
+    width: "95%",
 
     backgroundColor: "#ca6128",
     padding: 10,
-    margin: 10,
     borderRadius: 5,
   },
   addButtonText: {
