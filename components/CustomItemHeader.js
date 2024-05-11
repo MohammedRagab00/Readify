@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ios = Platform.OS == 'ios';
 
-export default function CustomItemHeader({ router }) {
+export default function CustomItemHeader({ router,name }) {
     const { top } = useSafeAreaInsets();
 
     return (
@@ -40,7 +40,7 @@ export default function CustomItemHeader({ router }) {
               </TouchableOpacity>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
                 <Text style={{ fontSize: 30, color: 'white', fontWeight: 'bold' }}>
-                  Item
+                  {name}
                 </Text>
               </View>
             </View>

@@ -80,7 +80,7 @@ export default function ItemDetails() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomItemHeader router={router} />
+      <CustomItemHeader router={router}  name={book.name} />
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: book.imageUrl }} />
       </View>
@@ -134,13 +134,14 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: "#874f1f",
     borderWidth: 8,
+    marginTop:10
   },
   image: {
     flex: 1,
     resizeMode: "cover",
   },
   detailsContainer: {
-    flex: 0.5,
+    flex: 0.4,
     paddingHorizontal: 10,
     paddingVertical: 20,
     margin: 7,
