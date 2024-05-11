@@ -9,6 +9,7 @@ import {
   Alert,
   FlatList,
   Modal,
+  // ScrollView,
 } from "react-native";
 import { db } from "../../firebaseConfig";
 import {
@@ -178,6 +179,7 @@ export default function Admin() {
             <Text style={styles.modalTitle}>
               {selectedProduct ? "Edit Product" : "Add Product"}
             </Text>
+            {/* <View style={{ alignSelf: "stretch" }}> */}
             <TextInput
               style={styles.input}
               placeholder="Enter book name"
@@ -191,12 +193,14 @@ export default function Admin() {
               onChangeText={setPrice}
               keyboardType="numeric"
             />
+            {/* <ScrollView horizontal> */}
             <TextInput
               style={styles.input}
               placeholder="Enter product image URL"
               value={imageUrl}
               onChangeText={setImageUrl}
             />
+            {/* </ScrollView> */}
             <TextInput
               style={styles.input}
               placeholder="Enter genre name"
@@ -215,7 +219,7 @@ export default function Admin() {
               value={publisher}
               onChangeText={setPublisher}
             />
-
+            {/* </View> */}
             <TouchableOpacity
               style={styles.addButton}
               onPress={selectedProduct ? handleUpdateProduct : handleAddProduct}
