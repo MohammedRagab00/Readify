@@ -1,412 +1,292 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
-  StyleSheet,
   View,
   Text,
   Image,
-  TextInput,
+  StyleSheet,
   TouchableOpacity,
   Alert,
-  FlatList,
+  TextInput,
   Modal,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomProfileHeader from "../../components/CustomProfileHeader";
+import { useRouter } from "expo-router";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-
-export default function Admin() {
-  const [name, setName] = useState("");
+import { auth } from "../../firebaseConfig";
+import { collection, getDoc, addDoc, doc } from "firebase/firestore";
+import { MaterialIcons } from "@expo/vector-icons";
+const ProfilePage = () => {
+  const [photo, setPhoto] = useState(null);
+  const [uEmail, setUEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [name, setBookName] = useState("");
   const [price, setPrice] = useState("");
   const [author, setAuthor] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  //   const [loading, setLoading] = useState(true);
-  //   const [error, setError] = useState(null);
   const [publisher, setPublisher] = useState("");
   const [genre, setGenre] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false); // State to track modal visibility
 
-  const [products, setProducts] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const fetchData = async () => {
-    const usersRef = collection(db, "Books");
-
-    const querySnapshot = await getDocs(usersRef);
-    const productList = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setProducts(productList);
-  };
-
+  const router = useRouter();
+  const user = auth.currentUser;
   useEffect(() => {
     fetchData();
+    fetchPhoto();
   }, []);
 
-  const handleDeleteProduct = async (bookId) => {
+  const fetchData = async () => {
     try {
-      await deleteDoc(doc(db, "Books", bookId));
-      Alert.alert("Book deleted successfully");
-      fetchData();
+      const userId = user.uid;
+      const userDocRef = doc(db, "users", userId);
+      const docSnapshot = await getDoc(userDocRef);
+
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        const userEmail = userData.email;
+        const userName = userData.name;
+        setUEmail(userEmail);
+        setUserName(userName);
+      } else {
+        console.log("No such document!");
+      }
     } catch (error) {
-      console.error("Error deleting book: ", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const handleAddProduct = async () => {
-    if (
-      name.trim() === "" ||
-      price.trim() === "" ||
-      imageUrl.trim() === "" ||
-      publisher.trim() === "" ||
-      author.trim() === "" ||
-      genre.trim() === ""
-    ) {
-      Alert.alert("Please enter book details");
-      return;
-    }
-
+  const fetchPhoto = async () => {
     try {
+      const storedPhoto = await AsyncStorage.getItem("profilePhoto");
+      if (storedPhoto) {
+        setPhoto(storedPhoto);
+      }
+    } catch (error) {
+      console.error("Error fetching photo:", error);
+    }
+  };
+
+  const savePhoto = async (photoUri) => {
+    try {
+      await AsyncStorage.setItem("profilePhoto", photoUri);
+    } catch (error) {
+      console.error("Error saving photo:", error.message);
+    }
+  };
+  const handleUploadPhoto = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setPhoto(result); // Store the entire result object in the state
+        savePhoto(result.uri); // Save only the URI
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to upload photo.");
+    }
+  };
+
+  const handleAddBook = async () => {
+    try {
+      const userId = user.uid;
       await addDoc(collection(db, "Books"), {
-        name: name,
-        price: parseFloat(price),
-        imageUrl: imageUrl,
-        author: author,
-        publisher: publisher,
-        genre: genre,
+        userId,
+        name,
+        price,
+        author,
+        publisher,
+        genre,
+        imageUrl: photo,
       });
-      Alert.alert("Book added successfully");
-      setName("");
+      // Clear input fields after adding the book
+      setBookName("");
       setPrice("");
-      setImageUrl("");
       setAuthor("");
       setPublisher("");
       setGenre("");
-      setModalVisible(false);
-      fetchData();
+      setPhoto(null);
+      setModalVisible(false); // Close the modal after adding the book
+      Alert.alert("Success", "Book added successfully!");
     } catch (error) {
-      console.error("Error adding product: ", error);
+      console.error("Error adding book:", error);
+      Alert.alert("Error", "Failed to add book.");
     }
   };
 
-  const handleUpdateProduct = async () => {
-    if (
-      name.trim() === "" ||
-      price.trim() === "" ||
-      imageUrl.trim() === "" ||
-      publisher.trim() === "" ||
-      author.trim() === "" ||
-      genre.trim() === ""
-    ) {
-      Alert.alert("Please enter book details");
-      return;
-    }
-
-    try {
-      const bookId = selectedProduct.id;
-      await updateDoc(doc(db, "Books", bookId), {
-        name: name,
-        price: parseFloat(price),
-        imageUrl: imageUrl,
-        author: author,
-        publisher: publisher,
-        genre: genre,
-      });
-      Alert.alert("Book updated successfully");
-      setName("");
-      setPrice("");
-      setImageUrl("");
-      setAuthor("");
-      setPublisher("");
-      setGenre("");
-      setModalVisible(false);
-      fetchData();
-    } catch (error) {
-      console.error("Error updating book: ", error);
-      Alert.alert("Error", "Failed to update book");
-    }
-  };
-
-  const openEditModal = (book) => {
-    setSelectedProduct(book);
-    setName(book.name);
-    setPrice(book.price.toString());
-    setImageUrl(book.imageUrl);
-    setAuthor(book.author);
-    setPublisher(book.publisher);
-    setGenre(book.genre);
-    setModalVisible(true);
-  };
   return (
     <View style={styles.container}>
-      <View
-        style={{ alignSelf: "flex-start", justifyContent: "space-between" }}
-      >
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            setSelectedProduct(null);
-            setName("");
-            setPrice("");
-            setImageUrl("");
-            setAuthor("");
-            setPublisher("");
-            setGenre("");
-            setModalVisible(true);
-          }}
-        >
-          <Text style={styles.buttonText}>Add Product</Text>
+      <CustomProfileHeader router={router} />
+      <View>
+        <TouchableOpacity onPress={handleUploadPhoto}>
+          <View style={styles.photoContainer}>
+            {photo ? (
+              <Image source={{ uri: photo }} style={styles.photo} />
+            ) : (
+              <Text style={styles.uploadText}>Upload Photo</Text>
+            )}
+          </View>
         </TouchableOpacity>
       </View>
+      <View style={{ borderColor: "#874f1f", borderWidth: 4, padding: 7 }}>
+        <Text style={styles.text}>Name: {userName}</Text>
+        <Text style={styles.text}>Email: {uEmail}</Text>
+      </View>
 
+      <View style={{ alignItems: "center", padding: 10, margin: 10 }}>
+        <Text style={{ fontSize: 17, fontWeight: "400" }}>
+          Want to sell a book please add information
+        </Text>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.addButtonText}>Add Book</Text>
+        </TouchableOpacity>
+      </View>
+      {/* Modal for adding a book */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          setModalVisible(false);
+          setModalVisible(!modalVisible);
         }}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {selectedProduct ? "Edit Product" : "Add Product"}
-            </Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter book name"
               value={name}
-              onChangeText={setName}
+              onChangeText={setBookName}
+              placeholder="Book Name"
             />
             <TextInput
               style={styles.input}
-              placeholder="Enter book price"
               value={price}
               onChangeText={setPrice}
+              placeholder="Price"
               keyboardType="numeric"
             />
             <TextInput
               style={styles.input}
-              placeholder="Enter product image URL"
-              value={imageUrl}
-              onChangeText={setImageUrl}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter genre name"
-              value={genre}
-              onChangeText={setGenre}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter author name"
               value={author}
               onChangeText={setAuthor}
+              placeholder="Author"
             />
             <TextInput
               style={styles.input}
-              placeholder="Enter publisher name"
               value={publisher}
               onChangeText={setPublisher}
+              placeholder="Publisher"
             />
-
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={selectedProduct ? handleUpdateProduct : handleAddProduct}
-            >
-              <Text style={styles.buttonText}>
-                {selectedProduct ? "Update Product" : "Add Product"}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => {
-                setSelectedProduct(null);
-                setName("");
-                setPrice("");
-                setImageUrl("");
-                setAuthor("");
-                setPublisher("");
-                setGenre("");
-                setModalVisible(false);
-              }}
-            >
-              <Text style={[styles.buttonText, { color: "#000" }]}>Cancel</Text>
-            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              value={genre}
+              onChangeText={setGenre}
+              placeholder="Genre"
+            />
+            <TextInput
+              style={styles.input}
+              value={photo}
+              onChangeText={setPhoto}
+              placeholder="PhotoURL"
+            />
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddBook}
+              >
+                <Text style={styles.addButtonText}>Add Book</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={{ justifyContent: "center" }}
+              >
+                <MaterialIcons name="cancel" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
-
-      <FlatList
-        data={products}
-        renderItem={({ item }) => (
-          <View style={styles.bookItem}>
-            <Image source={{ uri: item.imageUrl }} style={styles.bookImage} />
-            <View style={styles.bookInfoContainer}>
-              <Text style={styles.bookTitle}>{item.name}</Text>
-              <Text style={styles.bookDetails}>Author: {item.author}</Text>
-              <Text style={styles.bookDetails}>
-                Publisher: {item.publisher}
-              </Text>
-              <Text style={styles.bookDetails}>Genre: {item.genre}</Text>
-              <Text style={styles.bookDetails}>Price: {item.price}</Text>
-              <View style={{ alignSelf: "flex-end", marginHorizontal: 10 }}>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDeleteProduct(item.id)} // Pass item.id to handleDeleteProduct
-                >
-                  <Text style={styles.buttonText}>Delete</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => openEditModal(item)} // Pass item to openEditModal
-                >
-                  <Text style={styles.buttonText}>Edit</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
     </View>
   );
-}
+};
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
+    paddingTop: 40,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#fff",
+    marginBottom: "100%",
   },
-
-  bookItem: {
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    flexDirection: "row",
+  photoContainer: {
+    width: 90,
+    height: 90,
+    borderRadius: 75,
+    backgroundColor: "white",
+    justifyContent: "center",
     alignItems: "center",
+    marginBottom: 30,
+    borderColor: "#874f1f",
+    borderWidth: 4,
   },
-  bookImage: {
-    width: 120,
-    height: 190,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 10,
+  photo: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
-  bookInfoContainer: {
-    flex: 1,
-  },
-  bookTitle: {
+  uploadText: {
     fontSize: 16,
+    color: "black",
+  },
+  text: {
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "black",
+    // marginTop: 20,
   },
-  bookDetails: {
-    marginBottom: 10,
-  },
-
   input: {
-    height: 40,
-    borderColor: "#CCCCCC",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: "#FFFFFF",
     width: "100%",
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
   },
   addButton: {
-    backgroundColor: "#874f1f",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 18,
-    marginBottom: 10,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    // width: "95%",
+
+    backgroundColor: "#ca6128",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
   },
-  editButton: {
-    backgroundColor: "#000",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 18,
-    marginBottom: 10,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-  },
-  deleteButton: {
-    backgroundColor: "#874f1f",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 18,
-    marginBottom: 10,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
+  addButtonText: {
+    color: "white",
     fontWeight: "bold",
-    textAlign: "center",
   },
+  // Modal styles
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: "#717171",
+    backgroundColor: "white",
+    width: "100%",
     padding: 20,
-    borderRadius: 8,
-    elevation: 5,
-    minWidth: 300,
-    marginHorizontal: 20, // Added margin to the sides
-    alignItems: "center", // Centered the content horizontally
-  },
-
-  modalTitle: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#000",
-  },
-  cancelButton: {
-    backgroundColor: "#DDDDDD",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 18,
-    marginBottom: 10,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
+
+export default ProfilePage;
