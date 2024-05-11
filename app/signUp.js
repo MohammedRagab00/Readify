@@ -61,7 +61,7 @@ export default function SignUp() {
             <StatusBar style="dark" />
             <View style={{ paddingTop: 50, paddingHorizontal: 20, flex: 1 }}>
                 <View style={{ alignItems: "center" }}>
-                    <Image style={{ height: 100, width: 100, resizeMode: 'contain' }} source={require('../assets/images/register-1.png')} />
+                    <Image style={{ height: 250, width: 320, resizeMode: "contain" }} source={require('../assets/images/Signup.jpg')} />
                 </View>
                 <View style={{ marginTop: 20 }}>
                     <Text style={{ fontSize: 32, fontWeight: "bold", textAlign: "center", color: "#333" }}>Sign up</Text>
