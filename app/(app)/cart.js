@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList , Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import CustomCartHeader from "../../components/CustomCartHeader";
 import { useRouter } from 'expo-router';
 import { collection, getDocs } from 'firebase/firestore';
@@ -20,9 +21,14 @@ export default function Cart() {
   }, [user]);
 
   useEffect(() => {
-    // Recalculate total price whenever items change 
+    // Recalculate total price whenever items change
     calculateTotalPrice();
   }, [items]);
+
+  useEffect(() => {
+    // Load cart items from AsyncStorage when the component mounts
+    loadCartItems();
+  }, []);
 
   const fetchCartItems = async () => {
     try {
@@ -34,8 +40,29 @@ export default function Cart() {
         ...doc.data(),
       }));
       setItems(cartItems);
+      saveCartItems(cartItems); // Save cart items to AsyncStorage
     } catch (error) {
       console.error("Error fetching cart items: ", error);
+    }
+  };
+
+  const saveCartItems = async (cartItems) => {
+    try {
+      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems)); // Save cart items to AsyncStorage
+    } catch (error) {
+      console.error("Error saving cart items to AsyncStorage: ", error);
+    }
+  };
+
+  const loadCartItems = async () => {
+    try {
+      const cartItemsString = await AsyncStorage.getItem('cartItems'); // Retrieve cart items from AsyncStorage
+      if (cartItemsString) {
+        const cartItems = JSON.parse(cartItemsString);
+        setItems(cartItems);
+      }
+    } catch (error) {
+      console.error("Error loading cart items from AsyncStorage: ", error);
     }
   };
 
@@ -51,6 +78,7 @@ export default function Cart() {
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    saveCartItems(items); // Save updated cart items to AsyncStorage
   };
 
   const handleDecrement = (id) => {
@@ -59,13 +87,15 @@ export default function Cart() {
         item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
       )
     );
+    saveCartItems(items); // Save updated cart items to AsyncStorage
   };
 
   const handleDelete = (id) => {
-   const userId = getUserId();
+    const userId = getUserId();
     removeFromCart(userId, id)
       .then(() => {
         setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+        saveCartItems(items); // Save updated cart items to AsyncStorage
       })
       .catch((error) => {
         console.error("Error deleting item from cart:", error);
@@ -97,13 +127,17 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
-      <CustomCartHeader router={router}/>
+      <CustomCartHeader router={router} />
       <Text style={styles.title}>CART</Text>
       <FlatList
         data={items}
         renderItem={renderItem}
         keyExtractor={(item, index) => item.id.toString() + index} // Ensure unique keys by appending index
       />
+      <View style={styles.totalPriceContainer}>
+        <Text style={styles.totalPriceLabel}>Total Price:</Text>
+        <Text style={styles.totalPriceValue}>${totalPrice}</Text>
+      </View>
       <Text style={styles.additionalInfo}>
         *Shipping charges, taxes, and discount codes are calculated at the time of checkout.
       </Text>
@@ -180,4 +214,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  totalPriceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  totalPriceLabel: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  totalPriceValue: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginLeft: 5,
+  }
 });
