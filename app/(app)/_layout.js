@@ -2,6 +2,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import HomeHeader from "../../components/HomeHeader";
+
+import HomeHeader2 from "../../components/HomeHeader2";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
@@ -19,6 +21,12 @@ export default function _layout() {
         name="home"
         options={{
           header: () => <HomeHeader />,
+        }}
+      />
+            <Stack.Screen
+        name="home2"
+        options={{
+          header: () => <HomeHeader2 />,
         }}
       />
       <Stack.Screen

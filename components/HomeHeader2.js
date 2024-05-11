@@ -20,7 +20,7 @@ import { MenuItem } from './CustomMenuItems';
 
 const ios = Platform.OS == 'ios';
 
-export default function HomeHeader() {
+export default function HomeHeader2() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const { top } = useSafeAreaInsets();
@@ -34,8 +34,7 @@ export default function HomeHeader() {
   };
 
   const handleLogOut = async () => {
-    await logout();
-  };
+router.push('signIn')  };
   const handleRefresh = () => {
     setLoding(true); // Show loading indicator
     fetchBooks(); // Fetch books again
@@ -79,23 +78,9 @@ export default function HomeHeader() {
               width: 190,
             },
           }}>
+
           <MenuItem
-            text="Profile"
-            action={handleProfile}
-            value={null}
-            icon={<FontAwesome5 name="user-circle" size={20} color="#737373" />}
-          />
-          <Divider />
-          
-          <MenuItem
-            text="Cart"
-            action={handleCart}
-            value={null}
-            icon={<Feather name="shopping-cart" size={20} color="#737373" />}
-          />
-          <Divider />
-          <MenuItem
-            text="Sign Out"
+            text="Sign in"
             action={handleLogOut}
             value={null}
             icon={<AntDesign name="logout" size={20} color="#737373" />}

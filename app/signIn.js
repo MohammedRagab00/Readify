@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { View, Image, Text, TextInput, Pressable, Alert } from "react-native";
+import { View, Image, Text, TextInput, Pressable, Alert, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Foundation } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -53,7 +53,7 @@ export default function SignIn() {
       const auth = getAuth();
       const user = auth.currentUser;
       const userId = user.uid;
-      if (userId === "EhdaXO8JiMM5cRdmFOdopspIuQf2" ||userId === "Ewc0uJR0AkY85t4zh6JALWuo9ez1"  ) {
+      if (userId === "EhdaXO8JiMM5cRdmFOdopspIuQf2" || userId === "Ewc0uJR0AkY85t4zh6JALWuo9ez1") {
         router.replace("/Admin");
       } else {
         router.replace("home");
@@ -78,6 +78,9 @@ export default function SignIn() {
     <CustomKeyBoardView>
       <StatusBar style="dark" />
       <View style={{ paddingTop: 64, paddingHorizontal: 20, flex: 1 }}>
+        <Pressable onPress={() => router.push("home2")} style={styles.homeButton}>
+          <Text style={{ color: "white", fontWeight: "bold" }}>continue with out sign</Text>
+        </Pressable>
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ height: 250, width: 320, resizeMode: "contain" }}
@@ -219,3 +222,14 @@ export default function SignIn() {
     </CustomKeyBoardView>
   );
 }
+
+const styles = StyleSheet.create({
+  homeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    padding: 10,
+    backgroundColor: "#ca6128",
+    borderRadius: 8,
+  },
+});
